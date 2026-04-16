@@ -568,6 +568,79 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script src="js/theme.js"></script>
+    <!-- Firebase (agar use kar rahe ho) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<!-- Auth Service -->
+<script src="js/services/auth.service.js"></script>
+<script>
+// Auth Service Definition
+const AuthService = {
+    async signUp(email, password, fullName) {
+        // Check if user already exists
+        const existingUser = localStorage.getItem(`user_${email}`);
+        if (existingUser) {
+            throw new Error('User already exists with this email');
+        }
+        
+        // Create new user
+        const user = { 
+            email, 
+            fullName, 
+            password, // Note: In production, never store plain passwords!
+            uid: Date.now().toString(),
+            createdAt: new Date().toISOString()
+        };
+        
+        localStorage.setItem(`user_${email}`, JSON.stringify(user));
+        localStorage.setItem('currentUser', JSON.stringify({ email, fullName, uid: user.uid }));
+        
+        return { email, fullName, uid: user.uid };
+    },
+    
+    async signIn(email, password) {
+        const userKey = `user_${email}`;
+        const userData = localStorage.getItem(userKey);
+        
+        if (!userData) {
+            throw new Error('No user found with this email');
+        }
+        
+        const user = JSON.parse(userData);
+        if (user.password !== password) {
+            throw new Error('Invalid password');
+        }
+        
+        localStorage.setItem('currentUser', JSON.stringify({ 
+            email: user.email, 
+            fullName: user.fullName, 
+            uid: user.uid 
+        }));
+        
+        return { email: user.email, fullName: user.fullName, uid: user.uid };
+    },
+    
+    getCurrentUser() {
+        const user = localStorage.getItem('currentUser');
+        return user ? JSON.parse(user) : null;
+    },
+    
+    async logout() {
+        localStorage.removeItem('currentUser');
+        window.location.href = 'index.html';
+    },
+    
+    isAuthenticated() {
+        return this.getCurrentUser() !== null;
+    }
+};
+
+// Check if user is already logged in
+if (AuthService.isAuthenticated() && window.location.pathname.includes('auth.html')) {
+    window.location.href = 'index.html';
+}
+</script>
 
     <script>
         // ============================================
