@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ReadEra</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #8B4513, #c17a3a);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #8B4513;
+        }
+
+        .stat-card .label {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .login-box {
+            max-width: 400px;
+            margin: 4rem auto;
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #8B4513;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            margin-top: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.6rem 1.25rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .tab-btn.active {
+            background: #8B4513;
+            color: white;
+            border-color: #8B4513;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .submit-btn {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .books-table-container {
+            background: white;
+            border-radius: 20px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .books-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .books-table th,
+        .books-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        .books-table th {
+            background: #f8fafc;
+        }
+
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            margin: 0 3px;
+            font-size: 0.75rem;
+        }
+
+        .edit-btn {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .msg {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 9999;
+        }
+
+        .msg.success {
+            background: #10b981;
+        }
+
+        .msg.error {
+            background: #ef4444;
+        }
+
+        body.dark-mode {
+            background: #0f172a;
+        }
+
+        body.dark-mode .stat-card,
+        body.dark-mode .form-card,
+        body.dark-mode .books-table-container,
+        body.dark-mode .login-box,
+        body.dark-mode .tab-btn {
+            background: #1f2937;
+            color: #e2e8f0;
+            border-color: #334155;
+        }
+
+        body.dark-mode .books-table th {
+            background: #111827;
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 12px;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-header">
+        <h1><i class="fas fa-crown"></i> ReadEra Admin Panel</h1>
+        <div>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+            <button class="theme-toggle" id="logoutBtn" style="margin-left: 0.5rem;"><i
+                    class="fas fa-sign-out-alt"></i></button>
+            <a href="index.html" class="theme-toggle"
+                style="margin-left: 0.5rem; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">🏠</a>
+        </div>
+    </div>
+
+    <div class="container" id="appContainer">
+        <!-- LOGIN BOX -->
+        <div id="loginBox">
+            <div class="login-box">
+                <i class="fas fa-shield-alt" style="font-size: 3rem; color: #8B4513; margin-bottom: 1rem;"></i>
+                <h2>Admin Login</h2>
+                <input type="text" id="adminUser" placeholder="Username" value="readera_admin">
+                <input type="password" id="adminPass" placeholder="Password" value="ReadEra@2026">
+                <button id="doLogin"><i class="fas fa-sign-in-alt"></i> Login</button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboard" style="display: none;">
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="books">📚 Books List</button>
+                <button class="tab-btn" data-tab="add">➕ Add New Book</button>
+                <button class="tab-btn" data-tab="bulk">📤 Bulk Upload JSON</button>
+            </div>
+
+            <div id="booksTab">
+                <div class="books-table-container">
+                    <table class="books-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Genre</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booksList">
+                            <tr>
+                                <td colspan="5">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="addTab" style="display: none;">
+                <div class="form-card">
+                    <h3 style="margin-bottom: 1rem;">➕ Add New Book</h3>
+                    <form id="addForm">
+                        <div class="form-row">
+                            <div class="form-group"><label>Title *</label><input type="text" id="addTitle" required>
+                            </div>
+                            <div class="form-group"><label>Author *</label><input type="text" id="addAuthor" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Genre</label><input type="text" id="addGenre"
+                                    placeholder="Fiction, Mystery, etc."></div>
+                            <div class="form-group"><label>Year</label><input type="number" id="addYear"></div>
+                        </div>
+                        <div class="form-group"><label>Summary</label><textarea id="addSummary" rows="4"
+                                placeholder="Book description..."></textarea></div>
+                        <button type="submit" class="submit-btn"><i class="fas fa-save"></i> Add Book</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="bulkTab" style="display: none;">
+                <div class="form-card">
+                    <h3 style="margin-bottom: 1rem;">📤 Bulk Upload JSON</h3>
+                    <p style="margin-bottom: 0.5rem; color: #64748b;">Paste JSON array of books:</p>
+                    <textarea id="bulkJson" rows="12"
+                        style="width:100%; font-family:monospace; font-size:12px; padding:0.5rem; border:2px solid #e2e8f0; border-radius:12px;"
+                        placeholder='[
+    {"title":"Pride and Prejudice","author":"Jane Austen","genre":"Romance","summary":"A classic romance novel.","year":1813},
+    {"title":"Frankenstein","author":"Mary Shelley","genre":"Horror","summary":"A scientist creates a living creature.","year":1818}
+]'></textarea>
+                    <button id="bulkUpload" class="submit-btn" style="margin-top: 1rem;"><i class="fas fa-upload"></i>
+                        Upload All Books</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ============================================
+        // READERA ADMIN PANEL - FIXED
+        // ============================================
+
+        // Supabase config
+        const SUPABASE_URL = "https://ryzbikpzxphrsdctvqp.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_MPqGLh4Z15HdLuTRQ81SzA_Ssm9n";
+        const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const ADMIN_USER = "readera_admin";
+        const ADMIN_PASS = "ReadEra@2026";
+
+        let allBooks = [];
+
+        // DOM elements
+        const loginBox = document.getElementById('loginBox');
+        const dashboard = document.getElementById('dashboard');
+        const booksList = document.getElementById('booksList');
+        const statsGrid = document.getElementById('statsGrid');
+
+        function showMsg(msg, type) {
+            const oldMsg = document.querySelector('.msg');
+            if (oldMsg) oldMsg.remove();
+            const div = document.createElement('div');
+            div.className = `msg ${type}`;
+            div.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${msg}`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        async function loadBooks() {
+            const { data, error } = await supabase.from('books').select('*').order('id', { ascending: false });
+            if (!error && data) {
+                allBooks = data;
+                renderBooks();
+            } else {
+                booksList.innerHTML = '<tr><td colspan="5">Error loading books</td></tr>';
+            }
+        }
+
+        function renderBooks() {
+            if (!allBooks.length) {
+                booksList.innerHTML = '<tr><td colspan="5" style="text-align:center;">📭 No books found. Add some!</td></tr>';
+                return;
+            }
+            booksList.innerHTML = allBooks.map(b => `
+                <tr>
+                    <td>${b.id}</td>
+                    <td><strong>${escapeHtml(b.title.substring(0, 60))}</strong></td>
+                    <td>${escapeHtml(b.author || '-')}</td>
+                    <td><span style="background:#f1f5f9; padding:2px 8px; border-radius:12px; font-size:0.75rem;">${escapeHtml(b.genre || 'General')}</span></td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editBook(${b.id})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="action-btn delete-btn" onclick="deleteBook(${b.id})"><i class="fas fa-trash"></i> Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadStats() {
+            const { count } = await supabase.from('books').select('*', { count: 'exact', head: true });
+            statsGrid.innerHTML = `
+                <div class="stat-card"><div class="number">${count || 0}</div><div class="label">Total Books</div></div>
+                <div class="stat-card"><div class="number">✨ Public Domain</div><div class="label">License Type</div></div>
+                <div class="stat-card"><div class="number">📖 Free</div><div class="label">Access</div></div>
+            `;
+        }
+
+        // Add book
+        document.getElementById('addForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const book = {
+                title: document.getElementById('addTitle').value.trim(),
+                author: document.getElementById('addAuthor').value.trim(),
+                genre: document.getElementById('addGenre').value.trim() || 'General',
+                summary: document.getElementById('addSummary').value.trim() || 'No summary available',
+                year: parseInt(document.getElementById('addYear').value) || null,
+                cover_url: 'https://placehold.co/300x400/8B4513/white?text=Book',
+                pdf_url: '',
+                total_pages: 0,
+                views: 0
+            };
+            if (!book.title || !book.author) {
+                showMsg('Title and Author are required!', 'error');
+                return;
+            }
+            const { error } = await supabase.from('books').insert(book);
+            if (error) { showMsg(error.message, 'error'); return; }
+            showMsg('✅ Book added successfully!', 'success');
+            document.getElementById('addForm').reset();
+            await loadBooks();
+            await loadStats();
+        });
+
+        // Edit book
+        window.editBook = async (id) => {
+            const newTitle = prompt('Enter new title:');
+            if (newTitle && newTitle.trim()) {
+                const { error } = await supabase.from('books').update({ title: newTitle.trim() }).eq('id', id);
+                if (error) { showMsg(error.message, 'error'); return; }
+                showMsg('✅ Book updated!', 'success');
+                await loadBooks();
+            }
+        };
+
+        // Delete book
+        window.deleteBook = async (id) => {
+            if (confirm('⚠️ Are you sure you want to delete this book?')) {
+                const { error } = await supabase.from('books').delete().eq('id', id);
+                if (error) { showMsg(error.message, 'error'); return; }
+                showMsg('✅ Book deleted!', 'success');
+                await loadBooks();
+                await loadStats();
+            }
+        };
+
+        // Bulk upload
+        document.getElementById('bulkUpload')?.addEventListener('click', async () => {
+            const jsonText = document.getElementById('bulkJson').value.trim();
+            if (!jsonText) { showMsg('Please paste JSON data!', 'error'); return; }
+            try {
+                const books = JSON.parse(jsonText);
+                if (!Array.isArray(books)) throw new Error('Not an array');
+                let success = 0;
+                let failed = 0;
+                for (const b of books) {
+                    const bookData = {
+                        title: b.title,
+                        author: b.author,
+                        genre: b.genre || 'General',
+                        summary: b.summary || 'No summary available',
+                        year: b.year || null,
+                        cover_url: 'https://placehold.co/300x400/8B4513/white?text=Book',
+                        pdf_url: '',
+                        total_pages: 0,
+                        views: 0
+                    };
+                    const { error } = await supabase.from('books').insert(bookData);
+                    if (!error) success++;
+                    else failed++;
+                }
+                showMsg(`✅ Added ${success} books! Failed: ${failed}`, 'success');
+                await loadBooks();
+                await loadStats();
+            } catch (e) {
+                showMsg('❌ Invalid JSON format!', 'error');
+            }
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const tab = btn.dataset.tab;
+                document.getElementById('booksTab').style.display = tab === 'books' ? 'block' : 'none';
+                document.getElementById('addTab').style.display = tab === 'add' ? 'block' : 'none';
+                document.getElementById('bulkTab').style.display = tab === 'bulk' ? 'block' : 'none';
+            });
+        });
+
+        // Login
+        document.getElementById('doLogin')?.addEventListener('click', () => {
+            const u = document.getElementById('adminUser').value;
+            const p = document.getElementById('adminPass').value;
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+                localStorage.setItem('admin_auth', 'true');
+                loginBox.style.display = 'none';
+                dashboard.style.display = 'block';
+                loadBooks();
+                loadStats();
+                showMsg('Login successful!', 'success');
+            } else {
+                showMsg('Invalid username or password!', 'error');
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn')?.addEventListener('click', () => {
+            localStorage.removeItem('admin_auth');
+            loginBox.style.display = 'block';
+            dashboard.style.display = 'none';
+            showMsg('Logged out', 'success');
+        });
+
+        // Check session
+        if (localStorage.getItem('admin_auth') === 'true') {
+            loginBox.style.display = 'none';
+            dashboard.style.display = 'block';
+            loadBooks();
+            loadStats();
+        }
+
+        // Theme toggle
+        document.getElementById('themeToggle')?.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        });
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+    </script>
+</body>
+
+</html>
