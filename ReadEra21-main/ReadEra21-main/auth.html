@@ -565,86 +565,90 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase.js"></script>
     <script src="js/theme.js"></script>
-    <!-- Firebase (agar use kar rahe ho) -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-
-<!-- Auth Service -->
-<script src="js/services/auth.service.js"></script>
-<script>
-// Auth Service Definition
-const AuthService = {
-    async signUp(email, password, fullName) {
-        // Check if user already exists
-        const existingUser = localStorage.getItem(`user_${email}`);
-        if (existingUser) {
-            throw new Error('User already exists with this email');
-        }
-        
-        // Create new user
-        const user = { 
-            email, 
-            fullName, 
-            password, // Note: In production, never store plain passwords!
-            uid: Date.now().toString(),
-            createdAt: new Date().toISOString()
-        };
-        
-        localStorage.setItem(`user_${email}`, JSON.stringify(user));
-        localStorage.setItem('currentUser', JSON.stringify({ email, fullName, uid: user.uid }));
-        
-        return { email, fullName, uid: user.uid };
-    },
     
-    async signIn(email, password) {
-        const userKey = `user_${email}`;
-        const userData = localStorage.getItem(userKey);
-        
-        if (!userData) {
-            throw new Error('No user found with this email');
-        }
-        
-        const user = JSON.parse(userData);
-        if (user.password !== password) {
-            throw new Error('Invalid password');
-        }
-        
-        localStorage.setItem('currentUser', JSON.stringify({ 
-            email: user.email, 
-            fullName: user.fullName, 
-            uid: user.uid 
-        }));
-        
-        return { email: user.email, fullName: user.fullName, uid: user.uid };
-    },
-    
-    getCurrentUser() {
-        const user = localStorage.getItem('currentUser');
-        return user ? JSON.parse(user) : null;
-    },
-    
-    async logout() {
-        localStorage.removeItem('currentUser');
-        window.location.href = 'index.html';
-    },
-    
-    isAuthenticated() {
-        return this.getCurrentUser() !== null;
-    }
-};
-
-// Check if user is already logged in
-if (AuthService.isAuthenticated() && window.location.pathname.includes('auth.html')) {
-    window.location.href = 'index.html';
-}
-</script>
-
     <script>
         // ============================================
-        // AUTH PAGE LOGIC
+        // AUTH SERVICE - Complete Working Version
+        // ============================================
+
+        const AuthService = {
+            // Sign Up function - returns object with success property
+            async signUp(email, password, fullName) {
+                try {
+                    // Check if user already exists
+                    const existingUser = localStorage.getItem(`user_${email}`);
+                    if (existingUser) {
+                        return { success: false, error: 'User already exists with this email' };
+                    }
+                    
+                    // Create new user
+                    const user = { 
+                        email, 
+                        fullName, 
+                        password: btoa(password), // Simple encoding (not secure for production)
+                        uid: Date.now().toString(),
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    localStorage.setItem(`user_${email}`, JSON.stringify(user));
+                    localStorage.setItem('currentUser', JSON.stringify({ email, fullName, uid: user.uid }));
+                    
+                    return { success: true, user: { email, fullName, uid: user.uid } };
+                } catch (error) {
+                    return { success: false, error: error.message };
+                }
+            },
+            
+            // Sign In function - returns object with success property
+            async signIn(email, password) {
+                try {
+                    const userKey = `user_${email}`;
+                    const userData = localStorage.getItem(userKey);
+                    
+                    if (!userData) {
+                        return { success: false, error: 'No user found with this email' };
+                    }
+                    
+                    const user = JSON.parse(userData);
+                    const encodedPassword = btoa(password);
+                    
+                    if (user.password !== encodedPassword) {
+                        return { success: false, error: 'Invalid password' };
+                    }
+                    
+                    localStorage.setItem('currentUser', JSON.stringify({ 
+                        email: user.email, 
+                        fullName: user.fullName, 
+                        uid: user.uid 
+                    }));
+                    
+                    return { success: true, user: { email: user.email, fullName: user.fullName, uid: user.uid } };
+                } catch (error) {
+                    return { success: false, error: error.message };
+                }
+            },
+            
+            // Get current user
+            getCurrentUser() {
+                const user = localStorage.getItem('currentUser');
+                return user ? JSON.parse(user) : null;
+            },
+            
+            // Check if authenticated
+            isAuthenticated() {
+                return this.getCurrentUser() !== null;
+            },
+            
+            // Logout
+            async logout() {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            }
+        };
+
+        // ============================================
+        // AUTH PAGE UI LOGIC
         // ============================================
 
         const loginFormDiv  = document.getElementById('login-form');
@@ -681,8 +685,12 @@ if (AuthService.isAuthenticated() && window.location.pathname.includes('auth.htm
 
         function showError(fieldId, message) {
             const errorEl = document.getElementById(fieldId);
-            if (errorEl) { errorEl.textContent = message; errorEl.classList.add('show'); }
-            const inputEl = document.getElementById(fieldId.replace('Error', ''));
+            if (errorEl) { 
+                errorEl.textContent = message; 
+                errorEl.classList.add('show'); 
+            }
+            const inputId = fieldId.replace('Error', '');
+            const inputEl = document.getElementById(inputId);
             if (inputEl) inputEl.classList.add('error');
         }
 
@@ -690,7 +698,7 @@ if (AuthService.isAuthenticated() && window.location.pathname.includes('auth.htm
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
 
-        // ── LOGIN ──
+        // ── LOGIN HANDLER ──
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             clearErrors();
@@ -699,9 +707,19 @@ if (AuthService.isAuthenticated() && window.location.pathname.includes('auth.htm
             const password = document.getElementById('loginPassword').value;
             let hasError   = false;
 
-            if (!email)               { showError('loginEmailError', 'Email is required');            hasError = true; }
-            else if (!isValidEmail(email)) { showError('loginEmailError', 'Enter a valid email address'); hasError = true; }
-            if (!password)            { showError('loginPasswordError', 'Password is required');      hasError = true; }
+            if (!email) { 
+                showError('loginEmailError', 'Email is required');            
+                hasError = true; 
+            } else if (!isValidEmail(email)) { 
+                showError('loginEmailError', 'Enter a valid email address'); 
+                hasError = true; 
+            }
+            
+            if (!password) { 
+                showError('loginPasswordError', 'Password is required');      
+                hasError = true; 
+            }
+            
             if (hasError) return;
 
             const submitBtn = document.getElementById('loginSubmitBtn');
@@ -710,15 +728,19 @@ if (AuthService.isAuthenticated() && window.location.pathname.includes('auth.htm
 
             const result = await AuthService.signIn(email, password);
 
-            if (!result.success) {
+            if (result.success) {
+                showToast('Login successful! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } else {
                 showError('loginEmailError', result.error || 'Login failed. Please check your credentials.');
                 submitBtn.disabled    = false;
                 submitBtn.textContent = 'Login';
             }
-            // On success, AuthService.signIn() handles the redirect automatically
         });
 
-        // ── SIGNUP ──
+        // ── SIGNUP HANDLER ──
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             clearErrors();
@@ -728,21 +750,34 @@ if (AuthService.isAuthenticated() && window.location.pathname.includes('auth.htm
             const password = document.getElementById('signupPassword').value;
             let hasError   = false;
 
-            if (!fullName || fullName.length < 2) { showError('signupNameError', 'Name must be at least 2 characters'); hasError = true; }
-            if (!email)                            { showError('signupEmailError', 'Email is required');                 hasError = true; }
-            else if (!isValidEmail(email))         { showError('signupEmailError', 'Enter a valid email address');       hasError = true; }
-            if (!password || password.length < 6) { showError('signupPasswordError', 'Password must be at least 6 characters'); hasError = true; }
+            if (!fullName || fullName.length < 2) { 
+                showError('signupNameError', 'Name must be at least 2 characters'); 
+                hasError = true; 
+            }
+            
+            if (!email) { 
+                showError('signupEmailError', 'Email is required');                 
+                hasError = true; 
+            } else if (!isValidEmail(email)) { 
+                showError('signupEmailError', 'Enter a valid email address');       
+                hasError = true; 
+            }
+            
+            if (!password || password.length < 6) { 
+                showError('signupPasswordError', 'Password must be at least 6 characters'); 
+                hasError = true; 
+            }
+            
             if (hasError) return;
 
             const submitBtn = document.getElementById('signupSubmitBtn');
             submitBtn.disabled    = true;
             submitBtn.textContent = 'Creating account…';
 
-            // ✅ FIXED: pass fullName as third argument
             const result = await AuthService.signUp(email, password, fullName);
 
             if (result.success) {
-                showToast('Account created! Please check your email to verify.', 'success');
+                showToast('Account created successfully! You can now login.', 'success');
                 setTimeout(() => {
                     showLogin();
                     document.getElementById('loginEmail').value = email;
@@ -759,16 +794,23 @@ if (AuthService.isAuthenticated() && window.location.pathname.includes('auth.htm
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => btn.dataset.tab === 'login' ? showLogin() : showSignup());
         });
-        document.getElementById('switchToSignup').addEventListener('click', (e) => { e.preventDefault(); showSignup(); });
-        document.getElementById('switchToLogin').addEventListener('click',  (e) => { e.preventDefault(); showLogin();  });
+        
+        document.getElementById('switchToSignup').addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            showSignup(); 
+        });
+        
+        document.getElementById('switchToLogin').addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            showLogin();  
+        });
 
-        // ✅ FIXED: async redirect check — if already logged in, go to home
-        (async () => {
-            const loggedIn = await AuthService.isAuthenticated();
-            if (loggedIn) window.location.href = 'index.html';
-        })();
+        // Check if already logged in - redirect to home
+        if (AuthService.isAuthenticated()) {
+            window.location.href = 'index.html';
+        }
 
-        // Mobile menu
+        // Mobile menu toggle
         const menuBtn  = document.getElementById('mobile-menu-btn');
         const navDrawer = document.getElementById('nav-drawer');
         if (menuBtn && navDrawer) {
