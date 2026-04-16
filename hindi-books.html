@@ -370,6 +370,51 @@
 
     <script src="js/theme.js"></script>
     <script>
+    // ============================================
+    // 🔴 SABSE PEHLE YE CODE ADD KAREIN 🔴
+    // HANDLE URL PARAMETERS (Search & Category)
+    // ============================================
+
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get('search');
+    const categoryQuery = urlParams.get('cat');
+
+    // ============================================
+    // HINDI BOOKS DATABASE (100+ Books)
+    // ============================================
+
+    const hindiBooks = [
+        // ... aapka existing books data
+    ];
+
+    // ============================================
+    // REST OF YOUR CODE (filterBooks, renderBooks, etc.)
+    // ============================================
+    
+    // Auto-fill search input if parameter exists
+    if (searchQuery) {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = searchQuery;
+            // Auto search
+            setTimeout(() => {
+                filterBooks();
+            }, 100);
+        }
+    }
+
+    // Auto-select category if parameter exists
+    if (categoryQuery) {
+        const catBtn = document.querySelector(`.cat-btn[data-cat="${categoryQuery}"]`);
+        if (catBtn) {
+            catBtn.click();
+        }
+    }
+    
+    // ... baaki ka code (renderBooks, event listeners, etc.)
+</script>
+    <script>
         // ============================================
         // HINDI BOOKS DATABASE (100+ Books)
         // ============================================

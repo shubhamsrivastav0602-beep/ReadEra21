@@ -685,6 +685,9 @@
                     <li><a href="about.html">About</a></li>
                 </ul>
                 <div class="nav-actions">
+                     <a href="hindi-books.html" class="btn btn-outline">
+                <i class="fas fa-language"></i> हिंदी (100+)
+            </a>
                     <button type="button" class="theme-toggle" id="theme-toggle"
                         aria-label="Toggle dark mode">🌙</button>
                     <a href="browse.html" class="btn btn-outline">Explore</a>
@@ -1081,6 +1084,47 @@
             await loadBooks();
         });
     </script>
+    <script>
+    // ============================================
+    // HINDI BOOKS REDIRECT WITH SEARCH PARAMS
+    // ============================================
+    
+    // Option 1: Simple redirect function
+    function goToHindiBooks() {
+        window.location.href = 'hindi-books.html';
+    }
+    
+    // Option 2: Search term ke saath redirect (Recommended)
+    function searchHindiBooks() {
+        const searchTerm = document.getElementById('searchInput')?.value;
+        if (searchTerm) {
+            window.location.href = `hindi-books.html?search=${encodeURIComponent(searchTerm)}`;
+        } else {
+            window.location.href = 'hindi-books.html';
+        }
+    }
+    
+    // Option 3: Selected category ke saath redirect
+    function browseHindiBooks(category) {
+        window.location.href = `hindi-books.html?cat=${category}`;
+    }
+    
+    // Button click handler
+    document.addEventListener('DOMContentLoaded', () => {
+        const hindiBtn = document.querySelector('a[href="hindi-books.html"]');
+        if (hindiBtn) {
+            hindiBtn.addEventListener('click', (e) => {
+                // Agar current page se search term pass karna hai
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput && searchInput.value) {
+                    e.preventDefault();
+                    window.location.href = `hindi-books.html?search=${encodeURIComponent(searchInput.value)}`;
+                }
+                // Otherwise normal redirect
+            });
+        }
+    });
+</script>
 </body>
 
 </html>
