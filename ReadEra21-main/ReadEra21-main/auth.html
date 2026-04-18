@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Sign Up - ReadEra</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ... tumhara pura CSS same ... */
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#f5f7fa;color:#1a2a3a;min-height:100vh;display:flex;flex-direction:column}.navbar{background:#fff;padding:.75rem 1.5rem;position:sticky;top:0;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,.05);border-bottom:1px solid #eee}.nav-container{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}.logo a{color:#8B4513;font-size:1.65rem;font-weight:700;text-decoration:none}.auth-container{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 1.5rem}.auth-card{background:#fff;border-radius:24px;box-shadow:0 20px 35px -12px rgba(0,0,0,.1);width:100%;max-width:480px;overflow:hidden}.auth-tabs{display:flex;border-bottom:1px solid #eef2f7}.tab-btn{flex:1;padding:1.25rem;font-size:1rem;font-weight:600;background:none;border:none;cursor:pointer;color:#64748b}.tab-btn.active{color:#8B4513;border-bottom:2px solid #8B4513;background:rgba(139,69,19,.03)}.auth-form{padding:2rem}.form-group{margin-bottom:1.5rem}.form-group label{display:block;margin-bottom:.5rem;font-weight:500;font-size:.9rem;color:#334155}.form-group input{width:100%;padding:.85rem 1rem;border:2px solid #e2e8f0;border-radius:12px;font-size:1rem}.form-group input:focus{outline:none;border-color:#8B4513}.form-group input.error{border-color:#ef4444}.error-message{color:#ef4444;font-size:.8rem;margin-top:.5rem;display:none}.error-message.show{display:block}.submit-btn{width:100%;padding:.9rem;background:#8B4513;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer}.submit-btn:disabled{background:#cbd5e1;cursor:not-allowed}.auth-footer{text-align:center;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid #eef2f7;font-size:.85rem;color:#64748b}.auth-footer a{color:#8B4513;text-decoration:none;font-weight:500}.toast{position:fixed;bottom:20px;right:20px;padding:12px 20px;border-radius:10px;color:#fff;font-weight:500;z-index:9999;animation:slideIn .3s ease}.toast.success{background:#10b981}.toast.error{background:#ef4444}@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+    </style>
+</head>
+<body>
+    <!-- NAVBAR, FORMS — same as before -->
+    <nav class="navbar"><div class="nav-container"><div class="logo"><a href="index.html">ReadEra</a></div></div></nav>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="login">Login</button>
+                <button class="tab-btn" data-tab="signup">Sign Up</button>
+            </div>
+            <div id="login-form" class="auth-form">
+                <form id="loginForm">
+                    <div class="form-group"><label>Email</label><input type="email" id="loginEmail" required><div class="error-message" id="loginEmailError"></div></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="loginPassword" required><div class="error-message" id="loginPasswordError"></div></div>
+                    <button type="submit" class="submit-btn" id="loginSubmitBtn">Login</button>
+                </form>
+                <div class="auth-footer">New? <a href="#" id="switchToSignup">Create account</a></div>
+            </div>
+            <div id="signup-form" class="auth-form" style="display:none">
+                <form id="signupForm">
+                    <div class="form-group"><label>Full Name</label><input type="text" id="signupName" required><div class="error-message" id="signupNameError"></div></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="signupEmail" required><div class="error-message" id="signupEmailError"></div></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="signupPassword" required><div class="error-message" id="signupPasswordError"></div></div>
+                    <button type="submit" class="submit-btn" id="signupSubmitBtn">Create Account</button>
+                </form>
+                <div class="auth-footer">Have account? <a href="#" id="switchToLogin">Login</a></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+    // === 1. APNI KEYS YAHAN DALO ===
+    const SUPABASE_URL = 'https://ntcbvpaubpsbkzbnffld.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_M1fc8IgxcKQHd_O88WmyYQ_G6Mtu0FF';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // === 2. Real AuthService ===
+    const AuthService = {
+        async signUp(email, password, fullName) {
+            const { data, error } = await supabase.auth.signUp({
+                email, password,
+                options: { data: { full_name: fullName } }
+            });
+            if (error) throw error;
+            return data.user;
+        },
+        async signIn(email, password) {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            return data.user;
+        },
+        async getCurrentUser() {
+            const { data } = await supabase.auth.getUser();
+            return data.user;
+        },
+        async isAuthenticated() {
+            const { data } = await supabase.auth.getSession();
+            return !!data.session;
+        },
+        async logout() {
+            await supabase.auth.signOut();
+            window.location.href = 'index.html';
+        }
+    };
+
+    // Auto redirect if logged in
+    (async () => {
+        if (await AuthService.isAuthenticated()) window.location.href = 'index.html';
+    })();
+    </script>
+
+    <script>
+    // === 3. UI Logic (same as before, bas try/catch) ===
+    const loginFormDiv = document.getElementById('login-form');
+    const signupFormDiv = document.getElementById('signup-form');
+    const tabBtns = document.querySelectorAll('.tab-btn');
+
+    function showToast(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),3500)}
+    function showLogin(){loginFormDiv.style.display='block';signupFormDiv.style.display='none';tabBtns.forEach(b=>b.classList.toggle('active',b.dataset.tab==='login'))}
+    function showSignup(){loginFormDiv.style.display='none';signupFormDiv.style.display='block';tabBtns.forEach(b=>b.classList.toggle('active',b.dataset.tab==='signup'))}
+    function clearErrors(){document.querySelectorAll('.error-message').forEach(e=>{e.classList.remove('show');e.textContent=''});document.querySelectorAll('input').forEach(i=>i.classList.remove('error'))}
+    function showError(id,msg){const e=document.getElementById(id);if(e){e.textContent=msg;e.classList.add('show')}document.getElementById(id.replace('Error',''))?.classList.add('error')}
+    const isValidEmail = e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+
+    document.getElementById('loginForm').addEventListener('submit', async e=>{
+        e.preventDefault();clearErrors();
+        const email=loginEmail.value.trim(), pass=loginPassword.value;
+        if(!email||!isValidEmail(email)) return showError('loginEmailError','Valid email do');
+        if(!pass) return showError('loginPasswordError','Password do');
+        loginSubmitBtn.disabled=true; loginSubmitBtn.textContent='Logging in…';
+        try{await AuthService.signIn(email,pass);showToast('Login successful!','success');setTimeout(()=>location.href='index.html',800)}
+        catch(err){showError('loginEmailError',err.message);loginSubmitBtn.disabled=false;loginSubmitBtn.textContent='Login'}
+    });
+
+    document.getElementById('signupForm').addEventListener('submit', async e=>{
+        e.preventDefault();clearErrors();
+        const name=signupName.value.trim(), email=signupEmail.value.trim(), pass=signupPassword.value;
+        if(name.length<2) return showError('signupNameError','Name chhota hai');
+        if(!isValidEmail(email)) return showError('signupEmailError','Valid email do');
+        if(pass.length<6) return showError('signupPasswordError','Min 6 chars');
+        signupSubmitBtn.disabled=true; signupSubmitBtn.textContent='Creating…';
+        try{
+            await AuthService.signUp(email,pass,name);
+            showToast('Account bana! Email verify karo, phir login karo.','success');
+            setTimeout(()=>{showLogin();loginEmail.value=email},1500);
+        }catch(err){showError('signupEmailError',err.message)}
+        finally{signupSubmitBtn.disabled=false;signupSubmitBtn.textContent='Create Account'}
+    });
+
+    tabBtns.forEach(b=>b.addEventListener('click',()=>b.dataset.tab==='login'?showLogin():showSignup()));
+    switchToSignup.onclick=e=>{e.preventDefault();showSignup()};
+    switchToLogin.onclick=e=>{e.preventDefault();showLogin()};
+    </script>
+</body>
+</html>
