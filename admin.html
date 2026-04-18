@@ -362,8 +362,8 @@
         // ============================================
 
         // Supabase config
-        const SUPABASE_URL = "https://ryzbikpzxphrsdctvqp.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_MPqGLh4Z15HdLuTRQ81SzA_Ssm9n";
+        const SUPABASE_URL = "https://ntcbvpaubpsbkzbnffld.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_M1fc8IgxcKQHd_O88WmyYQ_G6Mtu0FF";
         const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const ADMIN_USER = "readera_admin";
@@ -396,6 +396,78 @@
                 return m;
             });
         }
+        [
+            {
+                "title": "Master Your Morning",
+                "author": "Robin Sharma",
+                "genre": "Self Help",
+                "summary": "Transform your life by mastering the first hour of your day. Learn the secrets of successful people who wake up early and dominate their mornings.",
+                "year": 2024
+            },
+            {
+                "title": "Time Management Mastery",
+                "author": "Brian Tracy",
+                "genre": "Productivity",
+                "summary": "Stop wasting time and start achieving more in less time. Proven techniques to double your productivity.",
+                "year": 2024
+            },
+            {
+                "title": "Leadership 101",
+                "author": "John C. Maxwell",
+                "genre": "Management",
+                "summary": "Essential leadership principles for new and experienced leaders. Learn how to influence, inspire, and guide teams to success.",
+                "year": 2024
+            },
+            {
+                "title": "Cooking Made Simple",
+                "author": "Jamie Oliver",
+                "genre": "Cooking",
+                "summary": "Learn to cook delicious meals with basic ingredients. Perfect for beginners who want to master the kitchen.",
+                "year": 2024
+            },
+            {
+                "title": "Financial Freedom",
+                "author": "Ramit Sethi",
+                "genre": "Finance",
+                "summary": "Practical steps to manage money, invest wisely, and build wealth. No boring finance jargon.",
+                "year": 2024
+            },
+            {
+                "title": "Habit Formation",
+                "author": "James Clear",
+                "genre": "Self Help",
+                "summary": "Small changes, remarkable results. Learn how tiny habits can transform your life dramatically.",
+                "year": 2024
+            },
+            {
+                "title": "Stress Free Living",
+                "author": "Deepak Chopra",
+                "genre": "Wellness",
+                "summary": "Proven techniques to reduce stress, find calm, and live peacefully in a chaotic world.",
+                "year": 2024
+            },
+            {
+                "title": "Sales Psychology",
+                "author": "Chris Voss",
+                "genre": "Business",
+                "summary": "Master the art of negotiation and persuasion. Learn psychological techniques used by FBI negotiators.",
+                "year": 2024
+            },
+            {
+                "title": "Creative Writing Guide",
+                "author": "Stephen King",
+                "genre": "Writing",
+                "summary": "Learn the craft of writing from a master storyteller. Practical advice on plot, character, and voice.",
+                "year": 2024
+            },
+            {
+                "title": "Public Speaking Confidence",
+                "author": "Dale Carnegie",
+                "genre": "Communication",
+                "summary": "Overcome fear and deliver powerful speeches. Proven techniques to engage any audience.",
+                "year": 2024
+            }
+        ]
 
         async function loadBooks() {
             const { data, error } = await supabase.from('books').select('*').order('id', { ascending: false });
@@ -566,6 +638,50 @@
             localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
         });
         if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+    </script>
+    <!-- Pehli line mein supabase import sahi se kar -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // ============================================
+        // READERA ADMIN PANEL - FIXED
+        // ============================================
+
+        // Supabase config - APNI VALUES DALO
+        const SUPABASE_URL = "https://ryzbikpzxphrsdctvqp.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_MPqGLh4Z15HdLuTRQ81SzA_Ssm9n";
+        const supabase = window.supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Simple login - hardcoded for now
+        const ADMIN_USER = "admin";
+        const ADMIN_PASS = "ReadEra@2026";
+
+        // Check if already logged in
+        if (localStorage.getItem('admin_logged_in') === 'true') {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            loadBooks();
+            loadStats();
+        }
+
+        // Login button
+        document.getElementById('doLogin').onclick = function () {
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+
+            if (user === ADMIN_USER && pass === ADMIN_PASS) {
+                localStorage.setItem('admin_logged_in', 'true');
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadBooks();
+                loadStats();
+                showMsg('Login successful!', 'success');
+            } else {
+                showMsg('Wrong credentials! Use admin / ReadEra@2026', 'error');
+            }
+        };
+
+        // Rest of your functions...
     </script>
 </body>
 

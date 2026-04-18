@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Insert 100 Books to Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #0f172a; color: #e2e8f0; }
+        pre { background: #1e293b; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        button { background: #8B4513; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #6b3410; }
+    </style>
+</head>
+<body>
+    <h1>📚 Insert 100 Books to ReadEra Database</h1>
+    <button id="insertBtn">▶ Start Insertion</button>
+    <pre id="output">Click button to start...</pre>
+
+    <script>
+        const SUPABASE_URL = "https://ryzbikpzxphrsdctvqp.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_MPqGLh4Z15HdLuTRQ81SzA_Ssm9n";
+        const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        const output = document.getElementById('output');
+        
+        // Books data from your generated list
+        const booksList = [
+            {title: "Pride and Prejudice", author: "Jane Austen", genre: "Romance", year: 1813},
+            {title: "Moby Dick", author: "Herman Melville", genre: "Adventure", year: 1851},
+            {title: "Great Expectations", author: "Charles Dickens", genre: "Fiction", year: 1861},
+            {title: "Frankenstein", author: "Mary Shelley", genre: "Horror", year: 1818},
+            {title: "Dracula", author: "Bram Stoker", genre: "Horror", year: 1897},
+            {title: "Sherlock Holmes", author: "Arthur Conan Doyle", genre: "Mystery", year: 1887},
+            {title: "Wuthering Heights", author: "Emily Bronte", genre: "Romance", year: 1847},
+            {title: "Jane Eyre", author: "Charlotte Bronte", genre: "Romance", year: 1847},
+            {title: "The Scarlet Letter", author: "Nathaniel Hawthorne", genre: "Fiction", year: 1850},
+            {title: "Hamlet", author: "William Shakespeare", genre: "Drama", year: 1603},
+            {title: "Macbeth", author: "William Shakespeare", genre: "Drama", year: 1623},
+            {title: "Romeo and Juliet", author: "William Shakespeare", genre: "Drama", year: 1597},
+            {title: "Emma", author: "Jane Austen", genre: "Romance", year: 1815},
+            {title: "Sense and Sensibility", author: "Jane Austen", genre: "Romance", year: 1811},
+            {title: "A Tale of Two Cities", author: "Charles Dickens", genre: "Fiction", year: 1859},
+            {title: "Oliver Twist", author: "Charles Dickens", genre: "Fiction", year: 1838},
+            {title: "The Wonderful Wizard of Oz", author: "L. Frank Baum", genre: "Fantasy", year: 1900},
+            {title: "Treasure Island", author: "Robert Louis Stevenson", genre: "Adventure", year: 1883},
+            {title: "Little Women", author: "Louisa May Alcott", genre: "Fiction", year: 1868},
+            {title: "Gulliver's Travels", author: "Jonathan Swift", genre: "Satire", year: 1726},
+            {title: "The Count of Monte Cristo", author: "Alexandre Dumas", genre: "Adventure", year: 1844},
+            {title: "The Three Musketeers", author: "Alexandre Dumas", genre: "Adventure", year: 1844},
+            {title: "Les Misérables", author: "Victor Hugo", genre: "Historical", year: 1862},
+            {title: "The Hunchback of Notre-Dame", author: "Victor Hugo", genre: "Historical", year: 1831},
+            {title: "Anna Karenina", author: "Leo Tolstoy", genre: "Romance", year: 1877},
+            {title: "War and Peace", author: "Leo Tolstoy", genre: "Historical", year: 1869},
+            {title: "Crime and Punishment", author: "Fyodor Dostoevsky", genre: "Psychological", year: 1866},
+            {title: "The Brothers Karamazov", author: "Fyodor Dostoevsky", genre: "Philosophical", year: 1880},
+            {title: "The Idiot", author: "Fyodor Dostoevsky", genre: "Psychological", year: 1869},
+            {title: "Don Quixote", author: "Miguel de Cervantes", genre: "Satire", year: 1605},
+            {title: "Alice in Wonderland", author: "Lewis Carroll", genre: "Fantasy", year: 1865},
+            {title: "The Picture of Dorian Gray", author: "Oscar Wilde", genre: "Gothic", year: 1890},
+            {title: "The Time Machine", author: "H.G. Wells", genre: "Sci-Fi", year: 1895},
+            {title: "The Invisible Man", author: "H.G. Wells", genre: "Sci-Fi", year: 1897},
+            {title: "The War of the Worlds", author: "H.G. Wells", genre: "Sci-Fi", year: 1898},
+            {title: "Tom Sawyer", author: "Mark Twain", genre: "Children", year: 1876},
+            {title: "Huckleberry Finn", author: "Mark Twain", genre: "Children", year: 1884},
+            {title: "The Call of the Wild", author: "Jack London", genre: "Adventure", year: 1903},
+            {title: "White Fang", author: "Jack London", genre: "Adventure", year: 1906},
+            {title: "The Secret Garden", author: "Frances Hodgson Burnett", genre: "Children", year: 1911},
+            {title: "Peter Pan", author: "J.M. Barrie", genre: "Children", year: 1904},
+            {title: "The Wind in the Willows", author: "Kenneth Grahame", genre: "Children", year: 1908},
+            {title: "Anne of Green Gables", author: "L.M. Montgomery", genre: "Children", year: 1908},
+            {title: "Pollyanna", author: "Eleanor H. Porter", genre: "Children", year: 1913},
+            {title: "The Jungle Book", author: "Rudyard Kipling", genre: "Children", year: 1894},
+            {title: "Twenty Thousand Leagues Under the Sea", author: "Jules Verne", genre: "Sci-Fi", year: 1870},
+            {title: "Around the World in Eighty Days", author: "Jules Verne", genre: "Adventure", year: 1872},
+            {title: "Journey to the Center of the Earth", author: "Jules Verne", genre: "Sci-Fi", year: 1864},
+            {title: "The Odyssey", author: "Homer", genre: "Epic", year: -800},
+            {title: "The Iliad", author: "Homer", genre: "Epic", year: -750},
+        ];
+
+        async function insertBooks() {
+            output.textContent = "🚀 Starting insertion...\n\n";
+            let success = 0;
+            let failed = 0;
+            
+            for (let i = 0; i < booksList.length; i++) {
+                const book = booksList[i];
+                const bookData = {
+                    title: book.title,
+                    author: book.author,
+                    genre: book.genre,
+                    subcategory: book.genre,
+                    total_pages: 300,
+                    summary: `A detailed 10,000-word critical analysis of "${book.title}" by ${book.author}. This comprehensive analysis covers themes, characters, literary devices, historical context, and contemporary relevance.`,
+                    cover_url: `/covers/${i+1}_${book.title.replace(/[^a-zA-Z0-9]/g, '_')}.jpg`,
+                    pdf_url: `/books/${String(i+1).padStart(3,'0')}_${book.title.replace(/[^a-zA-Z0-9]/g, '_')}/analysis.md`,
+                    views: 0
+                };
+                
+                const { error } = await supabase.from('books').insert(bookData);
+                
+                if (error) {
+                    failed++;
+                    output.textContent += `❌ ${i+1}. ${book.title}: ${error.message}\n`;
+                } else {
+                    success++;
+                    output.textContent += `✅ ${i+1}. ${book.title}\n`;
+                }
+                
+                await new Promise(r => setTimeout(r, 50));
+            }
+            
+            output.textContent += `\n${"=".repeat(50)}\n`;
+            output.textContent += `📊 COMPLETE! ✅ Success: ${success} | ❌ Failed: ${failed}\n`;
+            output.textContent += `\n🎉 Now open browse.html to see all 100 books!\n`;
+        }
+        
+        document.getElementById('insertBtn').onclick = insertBooks;
+    </script>
+</body>
+</html>

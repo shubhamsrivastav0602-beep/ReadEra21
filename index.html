@@ -864,6 +864,13 @@
             <div class="recent-grid" id="recent-grid"></div>
         </section>
 
+        <section class="featured-section" aria-labelledby="analysis-heading">
+            <h2 class="section-title" id="analysis-heading">Deep Dives & Summaries <span style="font-size: 0.8rem; background: #8B4513; color: white; padding: 2px 8px; border-radius: 12px; vertical-align: middle; margin-left: 10px;">AI Powered</span></h2>
+            <div class="books-grid" id="analysis-books-grid">
+                <div class="loading-spinner"><i class="fas fa-spinner"></i> Loading summaries...</div>
+            </div>
+        </section>
+
         <section class="featured-section" aria-labelledby="featured-heading">
             <h2 class="section-title" id="featured-heading">Featured Books</h2>
             <div class="books-grid" id="featured-books-grid">
@@ -995,6 +1002,57 @@
             }
         }
 
+        // Load AI Analyses
+        async function loadAnalysesBooks() {
+            const container = document.getElementById('analysis-books-grid');
+            container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading AI summaries...</div>';
+
+            try {
+                // Assuming `supabase` is available globally in index.html as per line 954
+                const { data, error } = await supabase.from('book_analyses').select('*').order('created_at', { ascending: false }).limit(8);
+                
+                if (data && data.length > 0) {
+                    container.innerHTML = data.map(book => `
+                        <div class="book-card" onclick="location.href='book.html?id=${book.ia_identifier}'" style="border: 2px solid rgba(139, 69, 19, 0.4);">
+                            <div style="position: relative;">
+                                <img src="${book.cover_url || 'https://placehold.co/300x400/1e293b/fbbf24?text=Analysis'}" 
+                                     class="book-cover" 
+                                     alt="${escapeHtml(book.title)}"
+                                     onerror="this.src='https://placehold.co/300x400/1e293b/fbbf24?text=Analysis'">
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, transparent 100%); color: white; padding: 15px 10px 10px 10px; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 5px;">
+                                    <i class="fas fa-bolt" style="color: #fbbf24;"></i> 10-PAGE SUMMARY
+                                </div>
+                            </div>
+                            <div class="book-info">
+                                <div class="book-title">${escapeHtml(book.title.substring(0, 35))}</div>
+                                <div class="book-author">${escapeHtml(book.author || 'Unknown')}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    // Fallback to Demo button if no DB rows exist yet
+                    container.innerHTML = `
+                        <div class="book-card" onclick="location.href='book.html'" style="border: 2px solid rgba(139, 69, 19, 0.5);">
+                            <div style="position: relative;">
+                                <img src="https://placehold.co/300x400/1e293b/fbbf24?text=Meditations" class="book-cover">
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, transparent 100%); color: white; padding: 15px 10px 10px 10px; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 5px;">
+                                    <i class="fas fa-bolt" style="color: #fbbf24;"></i> DEMO SUMMARY
+                                </div>
+                            </div>
+                            <div class="book-info">
+                                <div class="book-title">Meditations (Demo Analysis)</div>
+                                <div class="book-author">Marcus Aurelius</div>
+                            </div>
+                        </div>
+                        <p style="padding-top: 10px; color: var(--text-muted); font-size: 0.9rem;">Run the ia_analyzer.py python script to populate more books here!</p>
+                    `;
+                }
+            } catch(e) {
+                console.error("Error loading analyses", e);
+                container.innerHTML = '<p>Could not load summaries.</p>';
+            }
+        }
+
         // Load recent reads from localStorage
         async function loadRecentReads() {
             const recent = JSON.parse(localStorage.getItem('recentBooks') || '[]');
@@ -1121,6 +1179,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             updateAuthUI();
             setupLogout();
+            await loadAnalysesBooks();
             await loadFeaturedBooks();
             await loadRecentReads();
 
