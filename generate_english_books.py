@@ -128,9 +128,14 @@ html_content = html_content.replace('data-cat="comics"', 'data-cat="comics"')
 # Now replace the JS BOOKS array. We will find the `const BOOKS = [` to `    // ============================================================` or similar.
 # In hindi-books.html, the BOOKS array is from `const BOOKS = [` until the end of the array `    ];`
 # Let's use regex to replace it.
-import re
-pattern = re.compile(r'const BOOKS = \[.*?\];', re.DOTALL)
-html_content = pattern.sub('const BOOKS = ' + js_books_array + ';', html_content)
+start_marker = "const BOOKS = ["
+end_marker = "window.setCommentStar = function"
+start_idx = html_content.find(start_marker)
+end_idx = html_content.find(end_marker)
+if start_idx != -1 and end_idx != -1:
+    html_content = html_content[:start_idx] + "const BOOKS = " + js_books_array + ";\n\n    " + html_content[end_idx:]
+else:
+    print("Warning: Could not replace BOOKS array properly.")
 
 # We also need to fix some translations inside JS templates
 html_content = html_content.replace('पढ़ें <i class="fas fa-arrow-right"></i>', 'Read <i class="fas fa-arrow-right"></i>')
@@ -140,6 +145,34 @@ html_content = html_content.replace('पृष्ठ', 'Pages')
 html_content = html_content.replace('प्रकाशक', 'Publisher')
 html_content = html_content.replace('कोई पुस्तक नहीं मिली', 'No books found')
 html_content = html_content.replace('Archive.org पर पढ़ें', 'Read on Archive.org')
+
+html_content = html_content.replace('पुस्तक विवरण', 'Book Details')
+html_content = html_content.replace('लेखक', 'Author')
+html_content = html_content.replace('श्रेणी', 'Category')
+html_content = html_content.replace('वर्ष', 'Year')
+html_content = html_content.replace('लाइसेंस', 'License')
+html_content = html_content.replace('डाउनलोड', 'Downloads')
+html_content = html_content.replace('रेटिंग एवं समीक्षा', 'Ratings & Reviews')
+html_content = html_content.replace('रेटिंग स्रोत:', 'Rating Source:')
+html_content = html_content.replace('पाठकों द्वारा', 'readers')
+html_content = html_content.replace('विस्तृत सारांश (10,000 शब्द)', 'Detailed Summary (10,000 Words)')
+html_content = html_content.replace('पुस्तक लिंक', 'Book Links')
+html_content = html_content.replace('Archive.org पर पढ़ें (मुफ्त)', 'Read on Archive.org (Free)')
+html_content = html_content.replace('Amazon पर खरीदें', 'Buy on Amazon')
+html_content = html_content.replace('टिप्पणियाँ एवं प्रतिक्रिया', 'Comments & Feedback')
+html_content = html_content.replace('आपका नाम *', 'Your Name *')
+html_content = html_content.replace('रेटिंग दें', 'Leave a rating')
+html_content = html_content.replace('अपनी प्रतिक्रिया लिखें...', 'Write your feedback...')
+html_content = html_content.replace('टिप्पणी जमा करें', 'Submit Comment')
+html_content = html_content.replace('पहली टिप्पणी लिखें!', 'Be the first to comment!')
+html_content = html_content.replace('कृपया नाम और टिप्पणी दोनों भरें।', 'Please fill in both your name and comment.')
+html_content = html_content.replace('अज्ञात', 'Unknown')
+html_content = html_content.replace('hi-IN', 'en-US')
+html_content = html_content.replace(
+    "const map = {dharma:'धर्म', sahitya:'Literature', adhyatm:'Fiction', ayurved:'History', motivational:'Science', jyotish:'Poetry', comics:'Comics'};",
+    "const map = {religion:'Religion', literature:'Literature', fiction:'Fiction', history:'History', science:'Science', poetry:'Poetry', comics:'Comics'};"
+)
+html_content = html_content.replace("No books found। दूसरा कीवर्ड आज़माएं।", "No books found. Please try another keyword.")
 
 with open("c:/Users/admin/Downloads/ReadEra/browse.html", "w", encoding="utf-8") as f:
     f.write(html_content)
