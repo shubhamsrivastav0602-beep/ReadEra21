@@ -1,0 +1,199 @@
+{
+  "name": "Automated Book Analysis Pipeline",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://archive.org/advancedsearch.php?q=collection:opensource+AND+mediatype:texts+AND+subject:philosophy&fl[]=identifier&sort[]=-downloads&output=json&rows=50",
+        "options": {}
+      },
+      "id": "search-ia",
+      "name": "Search Internet Archive",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "response.docs",
+        "options": {}
+      },
+      "id": "split-books",
+      "name": "Split Books",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [
+        400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://archive.org/stream/' + $json.identifier + '/' + $json.identifier + '_djvu.txt' }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "download-txt",
+      "name": "Download Text",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        600,
+        0
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=AIzaSyDIbBQPqj_dY5R5Y-kBjrEaUZYAvSCbVD4",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawBody": "={{ JSON.stringify({\"contents\": [{\"parts\": [{\"text\": `You are an elite literary analyst, a world-class storyteller, and an expert in human psychology.\\nI am providing you with the full text of a public domain book.\\nYour task is to read the ENTIRE book and generate a masterclass-level, 10,000-word deep-dive analysis.\\n\\n# TONE & STYLE:\\n- Write like a mix of Robert Greene, Malcolm Gladwell, and Morgan Housel.\\n- Highly engaging, punchy, thought-provoking, and deeply insightful.\\n- Use HTML formatting (<b>, <blockquote>, <ul>, etc.) where appropriate to enhance the reading experience.\\n- Analyze the psychology, the hidden themes, the historical context, and how the reader can apply these lessons today.\\n\\nPlease provide the output EXACTLY as a JSON object with the following keys:\\n\\n{\\n\\\"title\\\": \\\"Exact Title\\\",\\n\\\"author\\\": \\\"Exact Author\\\",\\n\\\"year\\\": 1900,\\n\\\"one_liner_hook\\\": \\\"Create a hyper-engaging, emotional or curiosity-inducing single sentence about the book.\\\",\\n\\\"why_it_matters\\\": \\\"2-3 paragraphs making a compelling absolute case why the modern reader NEEDS to read this analysis.\\\",\\n\\\"chapter_breakdowns\\\": [{ \\\"chapter\\\": \\\"Catchy Title for the Theme/Chapter\\\", \\\"key_idea\\\": \\\"Summarize the key idea.\\\", \\\"impact\\\": \\\"Around 800-1000 words of deeply engaging text analyzing this chapter/theme.\\\" }],\\n\\\"best_ideas\\\": [\\\"Idea 1\\\", \\\"Idea 2\\\"],\\n\\\"quotes\\\": [{ \\\"quote\\\": \\\"...\\\", \\\"commentary\\\": \\\"...\\\"}],\\n\\\"criticism\\\": \\\"Honest critique\\\",\\n\\\"verdict\\\": \\\"Final verdict\\\",\\n\\\"actionable_takeaways\\\": [\\\"Takeaway 1\\\"]\\n}\\n\\nText chunk:\\n` + ($json.data ? $json.data.substring(0, 1000000) : 'None')}]}  ], \"generationConfig\": {\"response_mime_type\": \"application/json\"}}) }}",
+        "options": {}
+      },
+      "id": "gemini-ai",
+      "name": "Gemini AI Analysis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        800,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const aiStr = $input.first().json.candidates[0].content.parts[0].text;\n  return JSON.parse(aiStr);\n} catch(e) {\n  return { error: 'Failed to process AI output' };\n}"
+      },
+      "id": "parse-json",
+      "name": "Parse AI Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ryzbikpzxphrsdctvqp.supabase.co/rest/v1/book_analyses",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "sb_publishable_MPqGLh4Z15HdLuTRQ81SzA_Ssm9n"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer sb_publishable_MPqGLh4Z15HdLuTRQ81SzA_Ssm9n"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ ia_identifier: $('Split Books').item.json.identifier, title: $json.title, author: $json.author, publication_year: parseInt($json.year) || 0, one_liner_hook: $json.one_liner_hook, why_it_matters: $json.why_it_matters, chapter_breakdowns: $json.chapter_breakdowns, best_ideas: $json.best_ideas, quotes: $json.quotes, criticism: $json.criticism, verdict: $json.verdict, actionable_takeaways: $json.actionable_takeaways }) }}",
+        "options": {}
+      },
+      "id": "supabase-insert",
+      "name": "Supabase Upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1200,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search Internet Archive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Internet Archive": {
+      "main": [
+        [
+          {
+            "node": "Split Books",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Books": {
+      "main": [
+        [
+          {
+            "node": "Download Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Text": {
+      "main": [
+        [
+          {
+            "node": "Gemini AI Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini AI Analysis": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Output": {
+      "main": [
+        [
+          {
+            "node": "Supabase Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

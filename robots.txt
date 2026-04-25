@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Hindi Books - Primary Content
+Allow: /hindi-books.html
+Allow: /browse.html
+Allow: /index.html
+
+# Sitemap location
+Sitemap: https://readera.in/sitemap.xml
+
+# Crawl-delay for politeness
+Crawl-delay: 1
