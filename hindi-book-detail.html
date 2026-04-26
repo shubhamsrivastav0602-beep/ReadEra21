@@ -190,7 +190,7 @@ function getGradient(cat){const g={religion:'linear-gradient(135deg,#0f172a,#1e2
 function getCoverUrl(book){
     // If it has an ISBN or specific OpenLibrary ID, we could use that. 
     // Since we only have IA identifier, we use the IA high-res image API or fallback.
-    return `covers/eng-${book.id}.jpg`;
+    return `covers/hindi-${book.id}.jpg`;
 }
 
 function addToLib(book){
@@ -269,10 +269,10 @@ function renderBook(book){
       </div>
       <div class="action-btns">
         <a class="btn btn-primary" href="${book.archiveUrl}" target="_blank"><i class="fas fa-book-open"></i> Read on Archive</a>
-        <button class="btn btn-green ${inLib?'added':''}" id="libBtn" onclick="addToLib(${JSON.stringify(book).replace(/"/g,'&quot;')})">
-          ${inLib?'✅ In Library':'+ Add to Library'}
+        <button class="btn btn-green \${inLib?'added':''}" id="libBtn" onclick="addToLib(\${JSON.stringify(book).replace(/"/g,'&quot;')})">
+          \${inLib?'✅ In Library':'+ Add to Library'}
         </button>
-        <a class="btn btn-outline" href="browse.html"><i class="fas fa-arrow-left"></i> Browse More</a>
+        <a class="btn btn-outline" href="hindi-books.html"><i class="fas fa-arrow-left"></i> Browse More</a>
       </div>
     </div>
   </div>
@@ -326,35 +326,44 @@ function renderBook(book){
   // Get book ID from URL
   const params=new URLSearchParams(window.location.search);
   const bookId=parseInt(params.get('id'));
-  if(!bookId){document.getElementById('bookContent').innerHTML='<p style="text-align:center;padding:3rem;color:#ef4444">Book not found. <a href="browse.html">Browse books</a></p>';return;}
+  if(!bookId){document.getElementById('bookContent').innerHTML='<p style="text-align:center;padding:3rem;color:#ef4444">Book not found. <a href="hindi-books.html">Browse books</a></p>';return;}
 
-  // Try to get BOOKS from parent (browse) via sessionStorage
+  // Try to get BOOKS from sessionStorage
   let book=null;
   try{
-    const cached=sessionStorage.getItem('BOOKS_DATA');
+    const cached=sessionStorage.getItem('HINDI_BOOKS_DATA');
     if(cached){const arr=JSON.parse(cached);book=arr.find(b=>b.id===bookId);}
   }catch(e){}
 
   if(book){renderBook(book);return;}
 
-  // Fetch browse.html and extract BOOKS array dynamically
-  fetch('browse.html')
+  // Fetch hindi-books.html and extract BOOKS array dynamically
+  fetch('hindi-books.html')
     .then(r=>r.text())
     .then(html=>{
-      const match=html.match(/const BOOKS\s*=\s*(\[[\s\S]*?\]);\s*\n\s*\/\/ ={3}/);
-      if(match){
+      const match1=html.match(/const BOOKS\s*=\s*(\[[\s\S]*?\]);/);
+      const match2=html.match(/const ADDITIONAL_BOOKS\s*=\s*(\[[\s\S]*?\]);/);
+      if(match1 || match2){
         try{
-          // Use Function constructor to safely eval the BOOKS array
-          const fn=new Function(`return ${match[1]}`);
-          const arr=fn();
-          try{sessionStorage.setItem('BOOKS_DATA',JSON.stringify(arr));}catch(e){}
+          let books1 = [];
+          let books2 = [];
+          if(match1){
+             const fn1=new Function(\`return \${match1[1]}\`);
+             books1 = fn1();
+          }
+          if(match2){
+             const fn2=new Function(\`return \${match2[1]}\`);
+             books2 = fn2();
+          }
+          const arr = [...books1, ...books2];
+          try{sessionStorage.setItem('HINDI_BOOKS_DATA',JSON.stringify(arr));}catch(e){}
           book=arr.find(b=>b.id===bookId);
           if(book){renderBook(book);}
-          else{document.getElementById('bookContent').innerHTML=`<p style="text-align:center;padding:3rem;color:#ef4444">Book #${bookId} not found. <a href="browse.html">Browse books</a></p>`;}
-        }catch(e){showFallback(bookId);}
+          else{document.getElementById('bookContent').innerHTML=\`<p style="text-align:center;padding:3rem;color:#ef4444">Book #\${bookId} not found. <a href="hindi-books.html">Browse books</a></p>\`;}
+        }catch(e){console.error(e); showFallback(bookId);}
       }else{showFallback(bookId);}
     })
-    .catch(()=>showFallback(bookId));
+    .catch((e)=>{console.error(e); showFallback(bookId);});
 
   function showFallback(id){
     // Show generic book page with Archive.org embed
@@ -363,8 +372,8 @@ function renderBook(book){
       <i class="fas fa-book" style="font-size:3rem;color:var(--primary);margin-bottom:1rem;display:block"></i>
       <h2 style="margin-bottom:0.75rem">Book #${id}</h2>
       <p style="color:var(--muted);margin-bottom:1.5rem">Loading book details...</p>
-      <a href="browse.html" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back to Browse</a>
-    </div>`;
+      <a href="hindi-books.html" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back to Browse</a>
+    </div>\`;
   }
 })();
 </script>

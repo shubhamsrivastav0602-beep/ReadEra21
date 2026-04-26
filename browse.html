@@ -2474,7 +2474,8 @@
         return s;
     }
 
-    function getCoverUrl(identifier) {
+    function getCoverUrl(identifier, id) { return `covers/eng-${id}.jpg`; }
+    function getCoverUrlOld(identifier) {
         return `https://archive.org/services/img/${identifier}`;
     }
 
@@ -2534,22 +2535,22 @@
     // RENDER BOOK CARD (Kindle-style, 4 per row)
     // ============================================================
     function renderCard(book) {
-        const cover = getCoverUrl(book.identifier);
+        const cover = getCoverUrl(book.identifier, book.id);
         const libBooks = [];
         try { libBooks.push(...JSON.parse(localStorage.getItem('myLibrary') || '[]')); } catch(e){}
         const inLib = libBooks.some(b => b.id === book.id);
         return `
         <div class="book-card" onclick="openBook(${book.id})" id="card-${book.id}">
-            <div class="book-cover-wrap">
-                <img class="book-cover-img" 
+            <div class="book-cover-wrap" style="position:relative; overflow:hidden;">
+                <img class="book-cover" 
                      src="${cover}" 
                      alt="${escHtml(book.title)}"
-                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                <div class="book-cover-placeholder" style="display:none;background:${getGradient(book.category)}">
-                    <span style="font-size:3rem">${book.coverEmoji || '📚'}</span>
-                    <span style="font-size:0.65rem;color:rgba(255,255,255,0.7);text-align:center;padding:0 0.5rem;line-height:1.3">${escHtml(book.title.substring(0,40))}</span>
+                     onerror="this.onerror=null; this.src=\'https://archive.org/services/img/\' + (typeof book !== \'undefined\' ? book.identifier : \'\'); setTimeout(()=>{if(!this.complete||this.naturalHeight===0){this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';}}, 1500);" style="width:100%;height:260px;object-fit:cover;display:block;">
+                <div class="book-cover-placeholder" style="display:none;width:100%;height:260px;background:${getGradient(book.category)};flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;text-align:center;">
+                    <span style="font-size:3rem">📖</span>
+                    <span style="font-size:1.1rem;color:#fff;font-family:'Playfair Display',serif;font-weight:700;margin-top:0.5rem">${escHtml(book.title)}</span>
+                    <span style="font-size:0.75rem;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:1px;margin-top:0.25rem">${escHtml(book.author)}</span>
                 </div>
-                <div class="book-license">${book.license}</div>
                 <button class="lib-btn ${inLib ? 'in-lib' : ''}" onclick="addToLibrary(${book.id}, event)" title="${inLib ? 'In Library' : 'Add to Library'}">
                     ${inLib ? '✅' : '+ 📚'}
                 </button>
@@ -2579,14 +2580,14 @@
             return;
         }
         grid.innerHTML = featured.map(book => {
-            const cover = getCoverUrl(book.identifier);
+            const cover = getCoverUrl(book.identifier, book.id);
             return `
             <div class="featured-card" onclick="openBook(${book.id})">
                 <div class="featured-badge">⭐ FEATURED</div>
                 <img class="featured-cover" 
                      src="${cover}" 
                      alt="${escHtml(book.title)}"
-                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                     onerror="this.onerror=null; this.src=\'https://archive.org/services/img/\' + (typeof book !== \'undefined\' ? book.identifier : \'\'); setTimeout(()=>{if(!this.complete||this.naturalHeight===0){this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';}}, 1500);">
                 <div class="featured-cover-placeholder" style="display:none;background:${getGradient(book.category)}">
                     <span style="font-size:3.5rem">${book.coverEmoji || '📚'}</span>
                 </div>

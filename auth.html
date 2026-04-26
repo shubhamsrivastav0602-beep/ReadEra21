@@ -45,7 +45,7 @@
         }
 
         .logo a {
-            color: #8B4513;
+            color: #007185;
             font-size: 1.65rem;
             font-weight: 700;
             text-decoration: none;
@@ -53,7 +53,7 @@
         }
 
         .logo a:hover {
-            color: #6b3410;
+            color: #00505f;
         }
 
         .nav-primary {
@@ -76,8 +76,8 @@
 
         .nav-primary>li>a:hover,
         .nav-primary>li>a[aria-current="page"] {
-            color: #8B4513;
-            background: rgba(139, 69, 19, 0.08);
+            color: #007185;
+            background: rgba(0, 113, 133, 0.08);
         }
 
         .nav-actions {
@@ -106,23 +106,23 @@
 
         .btn-outline {
             background: transparent;
-            color: #8B4513 !important;
+            color: #007185 !important;
             border-color: #c4a574;
         }
 
         .btn-outline:hover {
-            background: rgba(139, 69, 19, 0.08);
-            border-color: #8B4513;
+            background: rgba(0, 113, 133, 0.08);
+            border-color: #007185;
         }
 
         .btn-solid {
-            background: #8B4513;
+            background: #007185;
             color: #fff !important;
-            border-color: #8B4513;
+            border-color: #007185;
         }
 
         .btn-solid:hover {
-            background: #6b3410;
+            background: #00505f;
         }
 
         .theme-toggle {
@@ -140,8 +140,8 @@
 
         .theme-toggle:hover {
             background: #fff;
-            border-color: #8B4513;
-            color: #8B4513;
+            border-color: #007185;
+            color: #007185;
         }
 
         .menu-toggle {
@@ -153,7 +153,7 @@
             height: 44px;
             font-size: 1.25rem;
             cursor: pointer;
-            color: #8B4513;
+            color: #007185;
             align-items: center;
             justify-content: center;
         }
@@ -205,13 +205,13 @@
         }
 
         .tab-btn.active {
-            color: #8B4513;
-            border-bottom: 2px solid #8B4513;
-            background: rgba(139, 69, 19, 0.03);
+            color: #007185;
+            border-bottom: 2px solid #007185;
+            background: rgba(0, 113, 133, 0.03);
         }
 
         .tab-btn:hover:not(.active) {
-            color: #8B4513;
+            color: #007185;
             background: #f8fafc;
         }
 
@@ -243,7 +243,7 @@
 
         .form-group input:focus {
             outline: none;
-            border-color: #8B4513;
+            border-color: #007185;
         }
 
         .form-group input.error {
@@ -264,7 +264,7 @@
         .submit-btn {
             width: 100%;
             padding: 0.9rem;
-            background: #8B4513;
+            background: #007185;
             color: white;
             border: none;
             border-radius: 12px;
@@ -276,7 +276,7 @@
         }
 
         .submit-btn:hover {
-            background: #6b3410;
+            background: #00505f;
         }
 
         .submit-btn:disabled {
@@ -294,7 +294,7 @@
         }
 
         .auth-footer a {
-            color: #8B4513;
+            color: #007185;
             text-decoration: none;
             font-weight: 500;
         }
@@ -584,6 +584,21 @@
                     btn.classList.remove('active');
                 }
             });
+        }
+
+        // Show toast message
+        function showToast(msg, type = 'success') {
+            let t = document.getElementById('toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = 'toast';
+                t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);color:#fff;padding:0.75rem 1.5rem;border-radius:50px;font-weight:600;font-size:0.9rem;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,0.3);opacity:0;transition:opacity 0.3s';
+                document.body.appendChild(t);
+            }
+            t.style.background = type === 'success' ? '#10b981' : '#ef4444';
+            t.textContent = msg;
+            t.style.opacity = '1';
+            setTimeout(() => { t.style.opacity = '0'; }, 2500);
         }
 
         // Clear all error messages

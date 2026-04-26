@@ -25,10 +25,10 @@
 
     <style>
         :root {
-            --primary: #8B4513;
-            --primary-dark: #6b3410;
-            --primary-light: rgba(139, 69, 19, 0.08);
-            --accent: #d4a373;
+            --primary: #007185;
+            --primary-dark: #00505f;
+            --primary-light: rgba(0, 113, 133, 0.08);
+            --accent: #f6a811;
             --gold: #f59e0b;
             --dark: #0f172a;
             --text: #1e293b;
@@ -36,9 +36,9 @@
             --border: #e2e8f0;
             --card-bg: #ffffff;
             --bg: #f8fafc;
-            --shadow: 0 4px 20px rgba(0,0,0,0.08);
-            --shadow-hover: 0 16px 40px rgba(0,0,0,0.15);
-            --radius: 16px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
             --radius-sm: 10px;
         }
 
@@ -272,9 +272,12 @@
         }
         .books-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
         }
+        @media (max-width: 1100px) { .books-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .books-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { .books-grid { grid-template-columns: 1fr; } }
         .book-card {
             background: white; border-radius: var(--radius);
             overflow: hidden; cursor: pointer;
@@ -1241,28 +1244,32 @@
     // Render Featured
     function renderFeatured() {
         const grid = document.getElementById('featuredGrid');
-        grid.innerHTML = FEATURED_BOOKS.map(book => `
-            <div class="featured-card" onclick="openModal(${book.id})">
+        grid.innerHTML = FEATURED_BOOKS.map(book => {
+            const cover = \`https://archive.org/services/img/\${book.identifier}\`;
+            return \`
+            <div class="featured-card" onclick="window.location.href='hindi-book-detail.html?id=\${book.id}'">
                 <span class="featured-badge">⭐ Featured</span>
-                <div class="featured-cover-placeholder" style="background:${book.coverGradient || getGradient(book.id)}">
-                    <span>${book.coverEmoji || '📚'}</span>
+                <img src="\${cover}" class="featured-cover" alt="\${book.title}" onerror="this.onerror=null; this.src=\'https://archive.org/services/img/\' + (typeof book !== \'undefined\' ? book.identifier : \'\'); setTimeout(()=>{if(!this.complete||this.naturalHeight===0){this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';}}, 1500);" style="width:100%;height:260px;object-fit:cover;display:block;">
+                <div class="featured-cover-placeholder" style="display:none;background:\${book.coverGradient || getGradient(book.id)};width:100%;height:260px;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1rem;">
+                    <span style="font-size:3.5rem">\${book.coverEmoji || '📚'}</span>
+                    <span style="font-size:1.1rem;color:#fff;font-weight:700;margin-top:0.5rem">\${book.title.substring(0,30)}</span>
                 </div>
                 <div class="featured-info">
-                    <span class="featured-category">${getCatLabel(book.category)}</span>
-                    <div class="featured-title">${book.title}</div>
-                    <div class="featured-author">${book.author}</div>
+                    <span class="featured-category">\${getCatLabel(book.category)}</span>
+                    <div class="featured-title">\${book.title}</div>
+                    <div class="featured-author">\${book.author}</div>
                     <div class="star-rating">
-                        <span class="stars">${renderStars(book.rating)}</span>
-                        <span class="rating-text">${book.rating} (${(book.ratingCount/1000).toFixed(1)}K रेटिंग)</span>
+                        <span class="stars">\${renderStars(book.rating)}</span>
+                        <span class="rating-text">\${book.rating} (\${(book.ratingCount/1000).toFixed(1)}K रेटिंग)</span>
                     </div>
-                    <div class="featured-downloads"><i class="fas fa-download"></i> ${formatDownloads(book.downloads)} Downloads</div>
+                    <div class="featured-downloads"><i class="fas fa-download"></i> \${formatDownloads(book.downloads)} Downloads</div>
                     <div class="featured-actions">
-                        <button class="btn-read" onclick="event.stopPropagation();openModal(${book.id})">📖 पढ़ें</button>
-                        <a class="btn-amazon" href="${getAmazonLink(book)}" target="_blank" onclick="event.stopPropagation()"><i class="fab fa-amazon"></i></a>
+                        <button class="btn-read" onclick="event.stopPropagation();window.location.href='hindi-book-detail.html?id=\${book.id}'">📖 पढ़ें</button>
+                        <a class="btn-amazon" href="\${getAmazonLink(book)}" target="_blank" onclick="event.stopPropagation()"><i class="fab fa-amazon"></i></a>
                     </div>
                 </div>
             </div>
-        `).join('');
+        \`}).join('');
     }
 
     // Filter & sort books
@@ -1314,25 +1321,28 @@
 
         slice.forEach(book => {
             const card = document.createElement('div');
+            const cover = \`https://archive.org/services/img/\${book.identifier}\`;
             card.className = 'book-card';
-            card.onclick = () => openModal(book.id);
-            card.innerHTML = `
-                <div class="book-cover-wrap">
-                    <div class="book-cover-placeholder" style="background:${book.coverGradient || getGradient(book.id)}">
-                        <span style="font-size:2.5rem">${book.coverEmoji || '📚'}</span>
+            card.onclick = () => window.location.href = \`hindi-book-detail.html?id=\${book.id}\`;
+            card.innerHTML = \`
+                <div class="book-cover-wrap" style="position:relative; overflow:hidden;">
+                    <img src="\${cover}" class="book-cover" alt="\${book.title}" onerror="this.onerror=null; this.src=\'https://archive.org/services/img/\' + (typeof book !== \'undefined\' ? book.identifier : \'\'); setTimeout(()=>{if(!this.complete||this.naturalHeight===0){this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';}}, 1500);" style="width:100%;height:220px;object-fit:cover;display:block;">
+                    <div class="book-cover-placeholder" style="display:none;background:\${book.coverGradient || getGradient(book.id)};width:100%;height:220px;flex-direction:column;align-items:center;justify-content:center;padding:1rem;text-align:center;">
+                        <span style="font-size:2.5rem">\${book.coverEmoji || '📚'}</span>
+                        <span style="font-size:0.9rem;color:#fff;font-weight:700;margin-top:0.5rem">\${book.title.substring(0,30)}</span>
                     </div>
-                    <span class="book-license">${book.license}</span>
+                    <span class="book-license">\${book.license}</span>
                 </div>
                 <div class="book-info">
-                    <div class="book-title">${book.title}</div>
-                    <div class="book-author">${book.author}</div>
-                    <span class="book-genre">${getCatLabel(book.category)}</span>
+                    <div class="book-title">\${book.title}</div>
+                    <div class="book-author">\${book.author}</div>
+                    <span class="book-genre">\${getCatLabel(book.category)}</span>
                     <div class="book-mini-stats">
-                        <span class="mini-stars">${renderStars(book.rating)} ${book.rating}</span>
-                        <span><i class="fas fa-download"></i> ${formatDownloads(book.downloads)}</span>
+                        <span class="mini-stars">\${renderStars(book.rating)} \${book.rating}</span>
+                        <span><i class="fas fa-download"></i> \${formatDownloads(book.downloads)}</span>
                     </div>
                 </div>
-            `;
+            \`;
             grid.appendChild(card);
         });
 
