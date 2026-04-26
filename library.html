@@ -808,309 +808,121 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase.js"></script>
     <script src="js/theme.js"></script>
-
     <script>
-        // ============================================
-        // LIBRARY PAGE LOGIC
-        // ============================================
-
-        let libraryBooks = [];
-        let filteredBooks = [];
-        let currentTab = 'all';
-        let allGenres = [];
-
-        // DOM Elements
+        // ── Library reads from localStorage (set by browse.html & book-detail.html) ──
         const booksGridEl = document.getElementById('booksGrid');
         const searchInput = document.getElementById('searchLibrary');
         const genreFilter = document.getElementById('genreFilter');
         const sortBy = document.getElementById('sortBy');
+        let libraryBooks = [];
+        let currentTab = 'all';
 
-        // Check if user is logged in
-        function checkAuth() {
-            if (!AuthService.isAuthenticated()) {
-                booksGridEl.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-lock"></i>
-                        <h3>Login Required</h3>
-                        <p>Please login to view your library</p>
-                        <a href="auth.html" class="btn btn-solid">Login Now</a>
-                    </div>
-                `;
-                return false;
-            }
-            return true;
+        function escH(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+        function renderStars(r){const f=Math.floor(r||0);let s='';for(let i=0;i<f;i++)s+='★';for(let i=f;i<5;i++)s+='☆';return s;}
+        function getCover(b){return `https://archive.org/services/img/${b.identifier||b.id}`;}
+
+        function loadLibrary(){
+            try{libraryBooks=JSON.parse(localStorage.getItem('myLibrary')||'[]');}catch(e){libraryBooks=[];}
+            let prog={};try{prog=JSON.parse(localStorage.getItem('readingProgress')||'{}');}catch(e){}
+            libraryBooks.forEach(b=>{ const p=prog[b.id]; if(p){b.progress=p.page&&p.total?Math.round(p.page/p.total*100):0; b.lastPage=p.page; b.totalPages=p.total;} });
+            updateStats();
+            populateGenres();
+            applyAndRender();
         }
 
-        // Load library books
-        async function loadLibrary() {
-            if (!checkAuth()) return;
-
-            booksGridEl.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading your library...</div>';
-
-            const result = await LibraryService.getUserLibrary();
-
-            if (result.success && result.books) {
-                libraryBooks = result.books;
-                await loadGenresForFilter();
-                applyFiltersAndRender();
-                updateStats();
-            } else {
-                booksGridEl.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <h3>Failed to Load Library</h3>
-                        <p>Please try again later</p>
-                        <button onclick="loadLibrary()" class="btn btn-outline">Retry</button>
-                    </div>
-                `;
-            }
+        function populateGenres(){
+            const genres=[...new Set(libraryBooks.map(b=>b.category||b.genre).filter(Boolean))];
+            genreFilter.innerHTML='<option value="all">All Genres</option>'+genres.map(g=>`<option value="${escH(g)}">${escH(g)}</option>`).join('');
         }
 
-        // Load genres for filter dropdown
-        async function loadGenresForFilter() {
-            const result = await GenreService.getAllGenres();
-            if (result.success) {
-                allGenres = result.genres;
-                genreFilter.innerHTML = '<option value="all">All Genres</option>' +
-                    allGenres.map(g => `<option value="${escapeHtml(g.name)}">${escapeHtml(g.name)}</option>`).join('');
-            }
+        function updateStats(){
+            const r=libraryBooks.filter(b=>(b.progress||0)>0&&(b.progress||0)<100).length;
+            const c=libraryBooks.filter(b=>(b.progress||0)>=100).length;
+            const fav=libraryBooks.filter(b=>b.favorite).length;
+            document.getElementById('totalBooks').textContent=libraryBooks.length;
+            document.getElementById('readingCount').textContent=r;
+            document.getElementById('completedCount').textContent=c;
+            document.getElementById('favoriteCount').textContent=fav;
         }
 
-        // Apply filters and render
-        function applyFiltersAndRender() {
-            let filtered = [...libraryBooks];
-
-            // Filter by tab
-            if (currentTab === 'reading') {
-                filtered = filtered.filter(book => (book.last_read_page || 0) > 0 && (book.last_read_page || 0) < (book.total_pages || 999999));
-            } else if (currentTab === 'completed') {
-                filtered = filtered.filter(book => book.last_read_page >= (book.total_pages || 0) && book.total_pages > 0);
-            } else if (currentTab === 'favorites') {
-                filtered = filtered.filter(book => book.is_favorite === true);
-            }
-
-            // Filter by search
-            const searchTerm = searchInput.value.toLowerCase();
-            if (searchTerm) {
-                filtered = filtered.filter(book =>
-                    book.title.toLowerCase().includes(searchTerm) ||
-                    (book.author && book.author.toLowerCase().includes(searchTerm))
-                );
-            }
-
-            // Filter by genre
-            const selectedGenre = genreFilter.value;
-            if (selectedGenre !== 'all') {
-                filtered = filtered.filter(book => book.genre === selectedGenre);
-            }
-
-            // Sort
-            const sortValue = sortBy.value;
-            if (sortValue === 'title') {
-                filtered.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-            } else if (sortValue === 'progress') {
-                filtered.sort((a, b) => (b.last_read_page || 0) - (a.last_read_page || 0));
-            } else {
-                // Recent by added_at
-                filtered.sort((a, b) => new Date(b.added_at) - new Date(a.added_at));
-            }
-
-            filteredBooks = filtered;
-            renderBooks();
+        function applyAndRender(){
+            let books=[...libraryBooks];
+            const q=searchInput.value.toLowerCase();
+            if(q) books=books.filter(b=>b.title?.toLowerCase().includes(q)||b.author?.toLowerCase().includes(q));
+            const g=genreFilter.value;
+            if(g!=='all') books=books.filter(b=>(b.category||b.genre)===g);
+            if(currentTab==='reading') books=books.filter(b=>(b.progress||0)>0&&(b.progress||0)<100);
+            else if(currentTab==='completed') books=books.filter(b=>(b.progress||0)>=100);
+            else if(currentTab==='favorites') books=books.filter(b=>b.favorite);
+            const sv=sortBy.value;
+            if(sv==='title') books.sort((a,b)=>a.title?.localeCompare(b.title||'')||0);
+            else if(sv==='progress') books.sort((a,b)=>(b.progress||0)-(a.progress||0));
+            else books.sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
+            renderGrid(books);
         }
 
-        // Render books
-        function renderBooks() {
-            if (filteredBooks.length === 0) {
-                let emptyMessage = '';
-                if (currentTab === 'reading') {
-                    emptyMessage = 'You haven\'t started reading any books yet.';
-                } else if (currentTab === 'completed') {
-                    emptyMessage = 'You haven\'t completed any books yet.';
-                } else if (currentTab === 'favorites') {
-                    emptyMessage = 'No favorite books yet.';
-                } else {
-                    emptyMessage = 'Your library is empty. Start adding books!';
-                }
-
-                booksGridEl.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-book-open"></i>
-                        <h3>No Books Found</h3>
-                        <p>${emptyMessage}</p>
-                        <a href="browse.html" class="btn btn-solid">Browse Books</a>
-                    </div>
-                `;
+        function renderGrid(books){
+            if(books.length===0){
+                booksGridEl.innerHTML=`<div class="empty-state"><i class="fas fa-book-open"></i><h3>No Books Found</h3><p>${currentTab==='all'?'Your library is empty. Start adding books!':'No books in this category.'}</p><a href="browse.html" class="btn btn-solid">Browse Books</a></div>`;
                 return;
             }
-
-            booksGridEl.innerHTML = filteredBooks.map(book => {
-                const progressPercent = book.total_pages > 0 ? Math.round((book.last_read_page / book.total_pages) * 100) : 0;
-                const isCompleted = book.total_pages > 0 && book.last_read_page >= book.total_pages;
-
-                return `
-                    <div class="library-book-card" data-book-id="${book.id}">
-                        <div class="book-cover-small">
-                            <img src="${book.cover_url || 'https://placehold.co/100x130/8B4513/white?text=No+Cover'}" 
-                                 alt="${escapeHtml(book.title)}"
-                                 onerror="this.src='https://placehold.co/100x130/8B4513/white?text=No+Cover'">
-                        </div>
-                        <div class="book-details">
-                            <div class="book-title-small">${escapeHtml(book.title)}</div>
-                            <div class="book-author-small">by ${escapeHtml(book.author || 'Unknown')}</div>
-                            ${book.genre ? `<div class="book-genre-small">${escapeHtml(book.genre)}</div>` : ''}
-                            
-                            ${book.total_pages > 0 ? `
-                                <div class="progress-wrapper">
-                                    <div class="progress-info">
-                                        <span>${isCompleted ? '✅ Completed' : '📖 Reading Progress'}</span>
-                                        <span>${progressPercent}%</span>
-                                    </div>
-                                    <div class="progress-bar-bg">
-                                        <div class="progress-bar-fill" style="width: ${progressPercent}%;"></div>
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            <div class="book-actions-small">
-                                <a href="book.html?id=${book.id}" class="action-btn read-btn">
-                                    <i class="fas ${isCompleted ? 'fa-redo-alt' : 'fa-book-open'}"></i> 
-                                    ${isCompleted ? 'Re-read' : 'Continue Reading'}
-                                </a>
-                                <button class="action-btn favorite-btn ${book.is_favorite ? 'active' : ''}" onclick="toggleFavorite(${book.id})">
-                                    <i class="fas fa-star"></i> ${book.is_favorite ? 'Favorited' : 'Favorite'}
-                                </button>
-                                <button class="action-btn remove-btn" onclick="removeFromLibrary(${book.id})">
-                                    <i class="fas fa-trash"></i> Remove
-                                </button>
-                            </div>
+            booksGridEl.innerHTML=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem">
+            ${books.map(book=>{
+                const pct=book.progress||0;
+                const cover=getCover(book);
+                return `<div class="library-book-card" style="flex-direction:column;padding:0;cursor:pointer" onclick="location.href='book-detail.html?id=${book.id}'">
+                    <img src="${cover}" alt="${escH(book.title)}" 
+                         style="width:100%;height:220px;object-fit:cover;border-radius:12px 12px 0 0"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                    <div style="display:none;width:100%;height:220px;border-radius:12px 12px 0 0;background:linear-gradient(135deg,#1e293b,#334155);align-items:center;justify-content:center;font-size:3rem">📚</div>
+                    <div class="book-details" style="padding:0.85rem">
+                        <div class="book-title-small">${escH(book.title)}</div>
+                        <div class="book-author-small">by ${escH(book.author||'Unknown')}</div>
+                        ${book.category?`<span class="book-genre-small">${escH(book.category)}</span>`:''}
+                        ${pct>0?`<div class="progress-wrapper"><div class="progress-info"><span>${pct>=100?'✅ Completed':'📖 Reading'}</span><span>${pct}%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div></div>`:''}
+                        <div class="book-actions-small" onclick="event.stopPropagation()">
+                            <a href="book-detail.html?id=${book.id}" class="action-btn read-btn"><i class="fas fa-book-open"></i> ${pct>0&&pct<100?'Continue':'Read'}</a>
+                            <button class="action-btn favorite-btn ${book.favorite?'active':''}" onclick="toggleFav(${book.id})"><i class="fas fa-star"></i></button>
+                            <button class="action-btn remove-btn" onclick="removeBook(${book.id})"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
-                `;
-            }).join('');
+                </div>`;
+            }).join('')}
+            </div>`;
         }
 
-        // Update stats
-        function updateStats() {
-            const totalBooks = libraryBooks.length;
-            const readingCount = libraryBooks.filter(book => (book.last_read_page || 0) > 0 && (book.last_read_page || 0) < (book.total_pages || 999999)).length;
-            const completedCount = libraryBooks.filter(book => book.last_read_page >= (book.total_pages || 0) && book.total_pages > 0).length;
-            const favoriteCount = libraryBooks.filter(book => book.is_favorite === true).length;
-
-            document.getElementById('totalBooks').textContent = totalBooks;
-            document.getElementById('readingCount').textContent = readingCount;
-            document.getElementById('completedCount').textContent = completedCount;
-            document.getElementById('favoriteCount').textContent = favoriteCount;
-        }
-
-        // Toggle favorite
-        window.toggleFavorite = async function (bookId) {
-            const result = await LibraryService.toggleFavorite(bookId);
-            if (result.success) {
-                // Refresh library
-                await loadLibrary();
-                showToast(result.message || 'Favorite updated', 'success');
-            } else {
-                showToast('Failed to update favorite', 'error');
-            }
+        window.toggleFav=function(id){
+            let lib=[];try{lib=JSON.parse(localStorage.getItem('myLibrary')||'[]');}catch(e){}
+            const b=lib.find(x=>x.id===id);if(b){b.favorite=!b.favorite;try{localStorage.setItem('myLibrary',JSON.stringify(lib));}catch(e){}}
+            loadLibrary();
+        };
+        window.removeBook=function(id){
+            if(!confirm('Remove from library?'))return;
+            let lib=[];try{lib=JSON.parse(localStorage.getItem('myLibrary')||'[]');}catch(e){}
+            lib=lib.filter(x=>x.id!==id);try{localStorage.setItem('myLibrary',JSON.stringify(lib));}catch(e){}
+            loadLibrary();
         };
 
-        // Remove from library
-        window.removeFromLibrary = async function (bookId) {
-            if (confirm('Are you sure you want to remove this book from your library?')) {
-                const result = await LibraryService.removeFromLibrary(bookId);
-                if (result.success) {
-                    await loadLibrary();
-                    showToast('Book removed from library', 'success');
-                } else {
-                    showToast('Failed to remove book', 'error');
-                }
-            }
-        };
-
-        // Event listeners for filters
-        searchInput.addEventListener('input', () => applyFiltersAndRender());
-        genreFilter.addEventListener('change', () => applyFiltersAndRender());
-        sortBy.addEventListener('change', () => applyFiltersAndRender());
-
-        // Tab switching
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentTab = btn.dataset.tab;
-                applyFiltersAndRender();
+        searchInput.addEventListener('input',applyAndRender);
+        genreFilter.addEventListener('change',applyAndRender);
+        sortBy.addEventListener('change',applyAndRender);
+        document.querySelectorAll('.tab-btn').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+                btn.classList.add('active');currentTab=btn.dataset.tab;applyAndRender();
             });
         });
 
-        // Helper functions
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+        // Mobile menu
+        const menuBtn=document.getElementById('mobile-menu-btn');
+        const navDrawer=document.getElementById('nav-drawer');
+        if(menuBtn&&navDrawer){menuBtn.addEventListener('click',()=>navDrawer.classList.toggle('is-open'));}
 
-        function showToast(message, type) {
-            // Toast function from supabase.js
-            if (window.showToast) {
-                window.showToast(message, type);
-            } else {
-                alert(message);
-            }
-        }
-
-        // Update auth UI
-        function updateAuthUI() {
-            const isLoggedIn = AuthService.isAuthenticated();
-            const libraryLink = document.getElementById('library-link');
-            const profileLink = document.getElementById('profile-link');
-            const authLink = document.getElementById('auth-link');
-            const logoutLink = document.getElementById('logout-link');
-
-            if (isLoggedIn) {
-                if (libraryLink) libraryLink.style.display = 'list-item';
-                if (profileLink) profileLink.style.display = 'list-item';
-                if (authLink) authLink.style.display = 'none';
-                if (logoutLink) logoutLink.style.display = 'inline-flex';
-            } else {
-                if (libraryLink) libraryLink.style.display = 'none';
-                if (profileLink) profileLink.style.display = 'none';
-                if (authLink) authLink.style.display = 'inline-flex';
-                if (logoutLink) logoutLink.style.display = 'none';
-            }
-        }
-
-        // Setup logout
-        function setupLogout() {
-            const logoutBtn = document.getElementById('logout-link');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    await AuthService.signOut();
-                });
-            }
-        }
-
-        // Mobile menu toggle
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const navDrawer = document.getElementById('nav-drawer');
-        if (menuBtn && navDrawer) {
-            menuBtn.addEventListener('click', () => {
-                navDrawer.classList.toggle('is-open');
-            });
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', async () => {
-            updateAuthUI();
-            setupLogout();
-            await loadLibrary();
-        });
+        loadLibrary();
     </script>
+
+
 </body>
 
 </html>

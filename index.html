@@ -329,9 +329,12 @@
 
         .books-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
         }
+        @media(max-width:1100px){.books-grid{grid-template-columns:repeat(3,1fr);}}
+        @media(max-width:768px){.books-grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:480px){.books-grid{grid-template-columns:1fr;}}
 
         .book-card {
             background: white;
@@ -799,9 +802,7 @@
                 display: inline-flex;
             }
 
-            .books-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            }
+            .books-grid { grid-template-columns: repeat(2,1fr); }
         }
     </style>
 </head>
@@ -821,10 +822,9 @@
                 <ul class="nav-primary">
                     <li><a href="index.html" aria-current="page">Home</a></li>
                     <li><a href="browse.html">Browse</a></li>
-                    <li id="library-link" style="display: none;"><a href="library.html">My Library</a></li>
-                    <li id="profile-link" style="display: none;"><a href="profile.html">Profile</a></li>
+                    <li><a href="hindi-books.html">हिंदी Books</a></li>
+                    <li><a href="library.html">My Library</a></li>
                     <li><a href="contact.html">Contact</a></li>
-                    <li><a href="about.html">About</a></li>
                 </ul>
                 <div class="nav-actions">
                     <button type="button" class="theme-toggle" id="theme-toggle"
@@ -865,9 +865,12 @@
         </section>
 
         <section class="featured-section" aria-labelledby="featured-heading">
-            <h2 class="section-title" id="featured-heading">Featured Books</h2>
+            <h2 class="section-title" id="featured-heading">⭐ Featured Books — Best Picks</h2>
             <div class="books-grid" id="featured-books-grid">
-                <div class="loading-spinner"><i class="fas fa-spinner"></i> Loading books...</div>
+                <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading books...</div>
+            </div>
+            <div style="text-align:center;margin-top:2rem">
+              <a href="browse.html" class="btn btn-outline" style="font-size:1rem;padding:0.75rem 2rem">📚 Browse All 100+ Books →</a>
             </div>
         </section>
     </main>
@@ -970,130 +973,76 @@
             }
         }
 
-        // Load featured books from Supabase seamlessly blending AI summaries and regular books
-        async function loadFeaturedBooks() {
+        // ── 17 BEST FEATURED BOOKS ── hardcoded with real Archive.org covers
+        const FEATURED_BOOKS = [
+          { id:1,  identifier:'islamic-english-books-collection', title:'Best Islamic Books Collection',         author:'TMTARIQ',              cat:'Religion',    rating:4.0 },
+          { id:4,  identifier:'gulagarchipelagovolume1alekandrsolzhenitsyn', title:'The Gulag Archipelago Vol.1', author:'Aleksandr Solzhenitsyn',cat:'Literature',  rating:4.2 },
+          { id:45, identifier:'alice-in-wonderland_202108',        title:'Alice in Wonderland',                  author:'Lewis Carroll',        cat:'Classics',    rating:4.4 },
+          { id:37, identifier:'treasure-island_202107',            title:'Treasure Island',                      author:'Robert Louis Stevenson',cat:'Adventure',  rating:4.4 },
+          { id:47, identifier:'tales-from-the-jungle-book',        title:'Tales from The Jungle Book',           author:'Rudyard Kipling',      cat:'Classics',    rating:4.5 },
+          { id:59, identifier:'the-three-musketeers_202107',       title:'The Three Musketeers',                 author:'Alexandre Dumas',      cat:'Adventure',   rating:4.6 },
+          { id:57, identifier:'the-invisible-man_202106',          title:'The Invisible Man',                    author:'H.G. Wells',           cat:'Sci-Fi',      rating:4.6 },
+          { id:71, identifier:'the-last-of-mohicans',              title:'The Last of the Mohicans',             author:'James F. Cooper',      cat:'Adventure',   rating:4.7 },
+          { id:85, identifier:'tom-sawyer_202106',                 title:'Tom Sawyer',                           author:'Mark Twain',           cat:'Classics',    rating:4.8 },
+          { id:80, identifier:'the-secret-garden_202107',          title:'The Secret Garden',                    author:'Frances H. Burnett',   cat:'Classics',    rating:4.8 },
+          { id:92, identifier:'black-beauty_202106',               title:'Black Beauty',                         author:'Anna Sewell',          cat:'Classics',    rating:4.9 },
+          { id:98, identifier:'gullivers-travels_202303',          title:"Gulliver's Travels",                   author:'Jonathan Swift',       cat:'Satire',      rating:5.0 },
+          { id:89, identifier:'cinderella_202107',                 title:'Cinderella',                           author:'Ladybird Books',       cat:'Fairy Tale',  rating:4.9 },
+          { id:40, identifier:'beauty-and-the-beast_202106',       title:'Beauty and the Beast',                 author:'Vera Southgate',       cat:'Fairy Tale',  rating:4.4 },
+          { id:94, identifier:'madame-curie_202107',               title:'Madame Curie',                         author:'L. Du Garde Peach',    cat:'Biography',   rating:4.9 },
+          { id:9,  identifier:'JohnCowperPowysWeymouthSands1934',  title:'Weymouth Sands',                       author:'John Cowper Powys',    cat:'Fiction',     rating:4.1 },
+          { id:53, identifier:'the-kybalion-htp',                  title:'The Kybalion',                         author:'Three Initiates',      cat:'Philosophy',  rating:4.5 }
+        ];
+
+        function loadFeaturedBooks() {
             const container = document.getElementById('featured-books-grid');
-            container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading books...</div>';
-            
-            let combinedBooks = [];
-
-            try {
-                // Fetch AI processed books 
-                const { data: aiData, error } = await supabaseClient.from('book_analyses').select('*').order('created_at', { ascending: false }).limit(20);
-                
-                if (aiData && aiData.length > 0) {
-                    aiData.forEach(book => {
-                        combinedBooks.push(createBookCard(book));
-                    });
-                } else {
-                    throw new Error("No data found or database locked");
-                }
-            } catch(e) { 
-                // FALLBACK DEMO BOOKS: In case DB is empty or backend is still syncing n8n
-                const offlineDemos = [
-                    { id: "meditations", title: "Meditations", author: "Marcus Aurelius", cover: "https://placehold.co/300x400/1e293b/fbbf24?text=Meditations" },
-                    { id: "art-of-war", title: "The Art of War", author: "Sun Tzu", cover: "https://placehold.co/300x400/7f1d1d/fca5a5?text=Art+of+War" },
-                    { id: "the-prince", title: "The Prince", author: "Niccolo Machiavelli", cover: "https://placehold.co/300x400/064e3b/6ee7b7?text=The+Prince" }
-                ];
-                offlineDemos.forEach(demo => {
-                    combinedBooks.push(`
-                        <div class="book-card" onclick="location.href='book.html'">
-                            <img src="${demo.cover}" class="book-cover" alt="${escapeHtml(demo.title)}">
-                            <div class="book-info">
-                                <div class="book-title">${escapeHtml(demo.title)}</div>
-                                <div class="book-author">${escapeHtml(demo.author)}</div>
-                            </div>
+            container.innerHTML = FEATURED_BOOKS.map(book => {
+                const cover = `https://archive.org/services/img/${book.identifier}`;
+                const stars = '★'.repeat(Math.floor(book.rating)) + (book.rating%1>=0.5?'⯨':'') + '☆'.repeat(5-Math.ceil(book.rating));
+                return `
+                <div class="book-card" onclick="location.href='book-detail.html?id=${book.id}'" style="cursor:pointer">
+                    <div style="position:relative;overflow:hidden;border-radius:8px 8px 0 0;background:#1e293b">
+                        <img src="${cover}" class="book-cover" alt="${escapeHtml(book.title)}"
+                             style="width:100%;height:220px;object-fit:cover;display:block"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                        <div style="display:none;width:100%;height:220px;background:linear-gradient(135deg,#1e293b,#334155);align-items:center;justify-content:center;flex-direction:column;gap:0.5rem">
+                            <span style="font-size:3rem">📚</span>
+                            <span style="font-size:0.65rem;color:rgba(255,255,255,0.7);text-align:center;padding:0 0.75rem">${escapeHtml(book.title.substring(0,35))}</span>
                         </div>
-                    `);
-                });
-            }
-
-            // Fetch regular books
-            const result = await BookService.getFeaturedBooks(20);
-            if (result.success && result.books.length > 0) {
-                result.books.forEach(book => {
-                    combinedBooks.push(`
-                        <div class="book-card" onclick="location.href='book.html?id=${book.id}'">
-                            <img src="${book.cover_url || 'https://placehold.co/300x400/8B4513/white?text=No+Cover'}" 
-                                 class="book-cover" 
-                                 alt="${escapeHtml(book.title)}"
-                                 onerror="this.src='https://placehold.co/300x400/8B4513/white?text=No+Cover'">
-                            <div class="book-info">
-                                <div class="book-title">${escapeHtml(book.title.substring(0, 35))}</div>
-                                <div class="book-author">${escapeHtml(book.author || 'Unknown')}</div>
-                            </div>
-                        </div>
-                    `);
-                });
-            }
-
-            if (combinedBooks.length > 0) {
-                container.innerHTML = combinedBooks.join('');
-            } else {
-                container.innerHTML = '<p style="text-align: center; color: #64748b;">No books found. Please check back later.</p>';
-            }
-        }
-        
-        function createBookCard(book) {
-            return `
-                <div class="book-card" onclick="location.href='book.html?id=${book.ia_identifier}'">
-                    <img src="${book.cover_url || 'https://placehold.co/300x400/8B4513/white?text=No+Cover'}" 
-                         class="book-cover" 
-                         alt="${escapeHtml(book.title)}"
-                         onerror="this.src='https://placehold.co/300x400/8B4513/white?text=No+Cover'">
-                    <div class="book-info">
-                        <div class="book-title">${escapeHtml(book.title.substring(0, 35))}</div>
-                        <div class="book-author">${escapeHtml(book.author || 'Unknown')}</div>
+                        <span style="position:absolute;top:8px;left:8px;background:rgba(139,69,19,0.9);color:#fff;font-size:0.62rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:20px">${book.cat}</span>
                     </div>
-                </div>
-            `;
+                    <div class="book-info">
+                        <div class="book-title">${escapeHtml(book.title.substring(0,40))}</div>
+                        <div class="book-author">by ${escapeHtml(book.author)}</div>
+                        <div style="color:#f59e0b;font-size:0.72rem;margin-top:0.3rem">${stars} ${book.rating.toFixed(1)}</div>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
-        // Load recent reads from localStorage
-        async function loadRecentReads() {
-            const recent = JSON.parse(localStorage.getItem('recentBooks') || '[]');
+        // Load recent reads from localStorage myLibrary
+        function loadRecentReads() {
+            let lib = [];
+            try { lib = JSON.parse(localStorage.getItem('myLibrary') || '[]'); } catch(e){}
+            let prog = {};
+            try { prog = JSON.parse(localStorage.getItem('readingProgress') || '{}'); } catch(e){}
             const section = document.getElementById('recent-section');
             const container = document.getElementById('recent-grid');
-
-            if (recent.length === 0) {
-                section.style.display = 'none';
-                return;
-            }
-
+            if (lib.length === 0) { section.style.display = 'none'; return; }
             section.style.display = 'block';
-
-            // Fetch full book details for recent reads
-            const recentBooks = [];
-            for (const recentBook of recent.slice(0, 5)) {
-                const result = await BookService.getBookById(recentBook.id);
-                if (result.success && result.book) {
-                    recentBooks.push({
-                        ...result.book,
-                        last_read_page: recentBook.last_read_page || 0
-                    });
-                }
-            }
-
-            if (recentBooks.length === 0) {
-                section.style.display = 'none';
-                return;
-            }
-
-            container.innerHTML = recentBooks.map(book => {
-                const progressPercent = book.total_pages > 0 ? Math.round((book.last_read_page / book.total_pages) * 100) : 0;
-                return `
-                    <div class="recent-card" onclick="location.href='book.html?id=${book.id}'">
-                        <img src="${book.cover_url || 'https://placehold.co/60x80/8B4513/white?text=No+Cover'}" 
-                             class="recent-cover" 
-                             alt=""
-                             onerror="this.src='https://placehold.co/60x80/8B4513/white?text=No+Cover'">
-                        <div class="recent-info">
-                            <div class="recent-title">${escapeHtml(book.title.substring(0, 40))}</div>
-                            <div class="recent-author">${escapeHtml(book.author || 'Unknown')}</div>
-                            ${progressPercent > 0 ? `<div class="recent-progress">📖 ${progressPercent}% complete</div>` : ''}
-                        </div>
+            container.innerHTML = lib.slice(0,5).map(book => {
+                const p = prog[book.id];
+                const pct = p && p.total ? Math.round(p.page/p.total*100) : (book.progress||0);
+                const cover = `https://archive.org/services/img/${book.identifier||book.id}`;
+                return `<div class="recent-card" onclick="location.href='book-detail.html?id=${book.id}'">
+                    <img src="${cover}" class="recent-cover" alt=""
+                         onerror="this.style.background='#1e293b';this.src='data:image/svg+xml,<svg/>'">
+                    <div class="recent-info">
+                        <div class="recent-title">${escapeHtml((book.title||'').substring(0,40))}</div>
+                        <div class="recent-author">by ${escapeHtml(book.author||'Unknown')}</div>
+                        ${pct>0?`<div class="recent-progress">📖 ${pct}% complete</div>`:''}
                     </div>
-                `;
+                </div>`;
             }).join('');
         }
 
@@ -1172,14 +1121,10 @@
         }
 
         // Initialize page
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
             updateAuthUI();
-            setupLogout();
-            await loadFeaturedBooks();
-            await loadRecentReads();
-
-            // Make saveRecentBook globally available
-            window.saveRecentBook = saveRecentBook;
+            loadFeaturedBooks();
+            loadRecentReads();
         });
     </script>
 </body>

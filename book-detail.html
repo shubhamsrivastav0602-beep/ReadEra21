@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Details - ReadEra</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --primary:#8B4513; --primary-dark:#6b3410; --accent:#d4a373;
+  --gold:#f59e0b; --dark:#0f172a; --text:#1e293b; --muted:#64748b;
+  --border:#e2e8f0; --card:#ffffff; --bg:#f8fafc;
+  --shadow:0 4px 20px rgba(0,0,0,0.08); --radius:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+
+/* NAV */
+.navbar{background:#fff;padding:0.75rem 1.5rem;position:sticky;top:0;z-index:1000;box-shadow:0 2px 12px rgba(0,0,0,0.06);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.logo a{color:var(--primary);font-size:1.65rem;font-weight:800;text-decoration:none;}
+.nav-links{display:flex;gap:0.5rem;list-style:none;}
+.nav-links a{color:#334155;text-decoration:none;font-weight:500;padding:0.45rem 0.75rem;border-radius:8px;transition:all 0.2s;font-size:0.9rem;}
+.nav-links a:hover{color:var(--primary);background:rgba(139,69,19,0.08);}
+.nav-right{display:flex;align-items:center;gap:0.5rem;}
+.theme-btn{background:#f8fafc;border:2px solid var(--border);border-radius:10px;width:40px;height:40px;cursor:pointer;font-size:1.1rem;transition:all 0.2s;}
+.theme-btn:hover{border-color:var(--primary);}
+
+/* CONTAINER */
+.page-wrap{max-width:1100px;margin:0 auto;padding:2rem 1.5rem;flex:1;}
+.back-btn{display:inline-flex;align-items:center;gap:0.4rem;color:var(--muted);text-decoration:none;font-size:0.9rem;margin-bottom:1.5rem;padding:0.4rem 0.8rem;border-radius:8px;transition:all 0.2s;border:1px solid var(--border);background:#fff;}
+.back-btn:hover{color:var(--primary);border-color:var(--primary);}
+
+/* HERO CARD */
+.book-hero{background:#fff;border-radius:20px;padding:2rem;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:2rem;}
+.cover-col{flex-shrink:0;}
+.cover-img{width:220px;height:300px;object-fit:cover;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.2);}
+.cover-placeholder{width:220px;height:300px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.75rem;font-size:4rem;box-shadow:0 8px 30px rgba(0,0,0,0.2);}
+.info-col{flex:1;min-width:0;}
+.book-badge{display:inline-block;background:rgba(139,69,19,0.1);color:var(--primary);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:0.25rem 0.7rem;border-radius:50px;margin-bottom:0.75rem;}
+.book-title-lg{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;line-height:1.2;margin-bottom:0.5rem;color:var(--dark);}
+.book-author-lg{font-size:1.05rem;color:var(--muted);margin-bottom:1rem;}
+.book-meta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.75rem;margin-bottom:1.25rem;}
+.meta-item{background:var(--bg);border-radius:10px;padding:0.65rem 0.9rem;}
+.meta-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+.meta-value{font-size:0.9rem;font-weight:600;margin-top:0.15rem;}
+.stars-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;font-size:1rem;}
+.stars{color:var(--gold);}
+.rating-num{font-weight:700;font-size:1.1rem;}
+.rating-count{color:var(--muted);font-size:0.85rem;}
+.action-btns{display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.5rem;}
+.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.7rem 1.4rem;border-radius:10px;font-weight:600;font-size:0.9rem;cursor:pointer;text-decoration:none;border:none;font-family:inherit;transition:all 0.2s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px);}
+.btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary);}
+.btn-outline:hover{background:var(--primary);color:#fff;}
+.btn-green{background:#10b981;color:#fff;}
+.btn-green:hover{background:#059669;}
+.btn-green.added{background:#059669;}
+
+/* CONTENT SECTIONS */
+.content-card{background:#fff;border-radius:16px;padding:1.75rem;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:1.5rem;}
+.section-hdr{font-size:1.15rem;font-weight:700;color:var(--dark);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;border-bottom:2px solid var(--border);padding-bottom:0.5rem;}
+.section-hdr i{color:var(--primary);}
+.desc-text{font-size:0.95rem;line-height:1.85;color:#374151;}
+.desc-text h4{color:var(--primary);font-size:1rem;margin:1.25rem 0 0.5rem;}
+.desc-text p{margin-bottom:0.85rem;}
+.desc-text ul{padding-left:1.25rem;margin-bottom:0.85rem;}
+.desc-text ul li{margin-bottom:0.4rem;}
+
+/* READING PROGRESS */
+.progress-wrap{background:var(--bg);border-radius:12px;padding:1rem;margin-bottom:1rem;}
+.progress-bar-outer{background:var(--border);border-radius:50px;height:10px;margin:0.5rem 0;}
+.progress-bar-inner{background:linear-gradient(90deg,var(--primary),var(--accent));height:100%;border-radius:50px;transition:width 0.5s;}
+.progress-controls{display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-top:0.75rem;}
+.progress-controls input{width:70px;padding:0.35rem 0.5rem;border:2px solid var(--border);border-radius:8px;font-family:inherit;font-size:0.85rem;}
+.progress-controls input:focus{outline:none;border-color:var(--primary);}
+
+/* FOOTER */
+.site-footer{background:linear-gradient(180deg,#0c2744 0%,#061526 100%);color:#cbd5e1;padding:1.5rem;text-align:center;font-size:0.82rem;}
+.site-footer a{color:#cbd5e1;text-decoration:none;margin:0 0.75rem;}
+.site-footer a:hover{color:#fbbf24;}
+
+/* DARK MODE */
+body.dark{background:#0f172a;color:#e2e8f0;}
+body.dark .navbar{background:#111827;border-color:#1f2937;}
+body.dark .logo a{color:#fbbf24;}
+body.dark .book-hero,body.dark .content-card{background:#1f2937;border-color:#334155;}
+body.dark .meta-item,body.dark .progress-wrap{background:#111827;}
+body.dark .book-title-lg{color:#e2e8f0;}
+body.dark .desc-text{color:#cbd5e1;}
+body.dark .back-btn{background:#1f2937;border-color:#334155;color:#94a3b8;}
+body.dark .section-hdr{color:#e2e8f0;border-color:#334155;}
+body.dark .theme-btn{background:#1f2937;border-color:#334155;color:#e2e8f0;}
+body.dark .btn-outline{border-color:#fbbf24;color:#fbbf24;}
+body.dark .btn-outline:hover{background:#fbbf24;color:#0f172a;}
+
+@media(max-width:768px){.book-hero{flex-direction:column;align-items:center;text-align:center;}.book-title-lg{font-size:1.5rem;}.cover-img,.cover-placeholder{width:180px;height:245px;}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo"><a href="index.html">ReadEra</a></div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="browse.html">Browse</a></li>
+    <li><a href="hindi-books.html">हिंदी Books</a></li>
+    <li><a href="library.html">My Library</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="theme-btn" id="themeBtn">🌙</button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <a href="javascript:history.back()" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+  <div id="bookContent"><p style="text-align:center;padding:3rem;color:var(--muted)"><i class="fas fa-spinner fa-spin" style="font-size:2rem"></i><br><br>Loading book...</p></div>
+</div>
+
+<footer class="site-footer">
+  <a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+  <p style="margin-top:0.5rem">© 2026 ReadEra — Free Digital Library</p>
+</footer>
+
+<script>
+// ─── BOOKS DATA (shared with browse.html) ───
+// This file reads the book ID from URL and fetches from the same data
+// We embed a minimal lookup that works with browse.html BOOKS array
+
+// Load BOOKS from sessionStorage if available (set by browse.html)
+// Otherwise use URL params to show whatever data we have
+
+const SUMMARIES = {
+  default: `
+<h4>📖 About This Book</h4>
+<p>This is a public domain or Creative Commons work available freely through the Internet Archive. The Internet Archive is a non-profit library of millions of free books, movies, software, music, websites, and more.</p>
+
+<h4>🌟 Why Read This Book?</h4>
+<p>Public domain books are cultural treasures that have shaped civilization. Reading them connects you to the great minds of the past and gives you perspectives that modern works often miss. This book represents an important piece of literary heritage.</p>
+
+<h4>📚 Reading Experience</h4>
+<p>You can read this book directly on the Internet Archive website, download it in multiple formats (PDF, EPUB, Kindle), or read it in your browser. The Archive provides high-quality scans and text versions of thousands of classic works.</p>
+
+<h4>💡 Key Themes</h4>
+<ul>
+<li>Historical and cultural significance</li>
+<li>Timeless wisdom and storytelling</li>
+<li>Educational and informational value</li>
+<li>Preservation of human knowledge</li>
+</ul>
+
+<h4>🎯 Who Should Read This?</h4>
+<p>This book is ideal for students, researchers, book lovers, and anyone interested in exploring the vast world of public domain literature. Whether you are looking for classic fiction, historical documents, scientific texts, or cultural works, the Internet Archive has something for everyone.</p>
+
+<h4>📝 About the Internet Archive</h4>
+<p>The Internet Archive (archive.org) is an American digital library founded in 1996. Its mission is to provide "universal access to all knowledge." It hosts millions of freely available books, films, software, music, websites, and more. All books on ReadEra are sourced from this amazing resource.</p>
+
+<h4>🔖 How to Get the Most from This Book</h4>
+<p>Set aside dedicated reading time, take notes as you read, and reflect on how the ideas connect to your life. Classic works reward slow, careful reading. Don't rush — savor each page.</p>
+
+<h4>⭐ Reader Reviews</h4>
+<p>Thousands of readers around the world have discovered and enjoyed this work through the Internet Archive. Join the community of readers who are keeping these important works alive and accessible for future generations.</p>
+
+<h4>🌐 Access and Formats</h4>
+<p>This book is available in multiple formats: Read online, PDF download, EPUB for e-readers, and Kindle-compatible formats. All versions are completely free to download and share under public domain or Creative Commons licensing.</p>
+`
+};
+
+function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderStars(r){const f=Math.floor(r),h=r%1>=0.5;let s='';for(let i=0;i<f;i++)s+='★';if(h)s+='⯨';for(let i=f+(h?1:0);i<5;i++)s+='☆';return s;}
+function getGradient(cat){const g={religion:'linear-gradient(135deg,#1a1a2e,#16213e)',literature:'linear-gradient(135deg,#2d1b4e,#1a0a2e)',fiction:'linear-gradient(135deg,#0a2540,#0d3b6e)',history:'linear-gradient(135deg,#1a3a1a,#0d2a0d)',science:'linear-gradient(135deg,#0a1a3a,#051226)',poetry:'linear-gradient(135deg,#3a1a2e,#2a0a1e)'};return g[cat]||'linear-gradient(135deg,#1e293b,#334155)';}
+
+function getCoverUrl(identifier){return `https://archive.org/services/img/${identifier}`;}
+
+function addToLib(book){
+  let lib=[];try{lib=JSON.parse(localStorage.getItem('myLibrary')||'[]');}catch(e){}
+  const exists=lib.find(b=>b.id===book.id);
+  if(!exists){
+    lib.unshift({id:book.id,identifier:book.identifier,title:book.title,author:book.author,category:book.category,rating:book.rating,addedAt:Date.now()});
+    try{localStorage.setItem('myLibrary',JSON.stringify(lib));}catch(e){}
+    document.getElementById('libBtn').textContent='✅ In Library';
+    document.getElementById('libBtn').classList.add('added');
+    showToast('✅ Added to My Library!');
+  } else {
+    showToast('Already in your library!');
+  }
+}
+
+function saveProgress(bookId){
+  const pg=parseInt(document.getElementById('pgInput').value)||0;
+  const total=parseInt(document.getElementById('pgTotal').value)||100;
+  let prog={};try{prog=JSON.parse(localStorage.getItem('readingProgress')||'{}');}catch(e){}
+  prog[bookId]={page:pg,total,updatedAt:Date.now()};
+  try{localStorage.setItem('readingProgress',JSON.stringify(prog));}catch(e){}
+  const pct=total>0?Math.min(100,Math.round(pg/total*100)):0;
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressPct').textContent=pct+'%';
+  // Also update myLibrary tracking
+  let lib=[];try{lib=JSON.parse(localStorage.getItem('myLibrary')||'[]');}catch(e){}
+  const entry=lib.find(b=>b.id===bookId);
+  if(entry){entry.progress=pct;entry.lastPage=pg;try{localStorage.setItem('myLibrary',JSON.stringify(lib));}catch(e){}}
+  showToast(`📖 Progress saved: ${pct}%`);
+}
+
+function showToast(msg){
+  let t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:0.75rem 1.5rem;border-radius:50px;font-weight:600;font-size:0.9rem;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,0.3);opacity:0;transition:opacity 0.3s';document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';
+  setTimeout(()=>{t.style.opacity='0';},2500);
+}
+
+function renderBook(book){
+  const cover=getCoverUrl(book.identifier);
+  let lib=[];try{lib=JSON.parse(localStorage.getItem('myLibrary')||'[]');}catch(e){}
+  const inLib=lib.some(b=>b.id===book.id);
+  let prog={};try{prog=JSON.parse(localStorage.getItem('readingProgress')||'{}');}catch(e){}
+  const saved=prog[book.id]||{page:0,total:100};
+  const pct=saved.total>0?Math.min(100,Math.round(saved.page/saved.total*100)):0;
+  const summary=book.summary||SUMMARIES.default;
+
+  document.title=`${book.title} - ReadEra`;
+
+  document.getElementById('bookContent').innerHTML=`
+  <div class="book-hero">
+    <div class="cover-col">
+      <img class="cover-img" src="${cover}" alt="${escHtml(book.title)}"
+           onerror="this.style.display='none';document.getElementById('covPh').style.display='flex'">
+      <div class="cover-placeholder" id="covPh" style="display:none;background:${getGradient(book.category)}">
+        <span>📚</span>
+        <span style="font-size:0.7rem;color:rgba(255,255,255,0.8);text-align:center;padding:0 0.5rem">${escHtml(book.title.substring(0,30))}</span>
+      </div>
+    </div>
+    <div class="info-col">
+      <span class="book-badge">${escHtml(book.category)}</span>
+      <h1 class="book-title-lg">${escHtml(book.title)}</h1>
+      <div class="book-author-lg">by <strong>${escHtml(book.author)}</strong></div>
+      <div class="stars-row">
+        <span class="stars">${renderStars(book.rating)}</span>
+        <span class="rating-num">${book.rating.toFixed(1)}</span>
+        <span class="rating-count">(${book.ratingCount?.toLocaleString()} ratings)</span>
+      </div>
+      <div class="book-meta-grid">
+        <div class="meta-item"><div class="meta-label">Year</div><div class="meta-value">${escHtml(book.year)}</div></div>
+        <div class="meta-item"><div class="meta-label">License</div><div class="meta-value">${escHtml(book.license)}</div></div>
+        <div class="meta-item"><div class="meta-label">Downloads</div><div class="meta-value">${book.downloads?.toLocaleString()}</div></div>
+        <div class="meta-item"><div class="meta-label">Category</div><div class="meta-value">${escHtml(book.category)}</div></div>
+      </div>
+      <div class="action-btns">
+        <a class="btn btn-primary" href="${book.archiveUrl}" target="_blank"><i class="fas fa-book-open"></i> Read on Archive</a>
+        <button class="btn btn-green ${inLib?'added':''}" id="libBtn" onclick="addToLib(${JSON.stringify(book).replace(/"/g,'&quot;')})">
+          ${inLib?'✅ In Library':'+ Add to Library'}
+        </button>
+        <a class="btn btn-outline" href="browse.html"><i class="fas fa-arrow-left"></i> Browse More</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="section-hdr"><i class="fas fa-chart-line"></i> Reading Progress</div>
+    <div class="progress-wrap">
+      <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:var(--muted)">
+        <span>Progress</span><span id="progressPct">${pct}%</span>
+      </div>
+      <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar" style="width:${pct}%"></div></div>
+      <div class="progress-controls">
+        <span style="font-size:0.85rem;color:var(--muted)">Page:</span>
+        <input type="number" id="pgInput" value="${saved.page}" min="0" placeholder="Page">
+        <span style="font-size:0.85rem;color:var(--muted)">of</span>
+        <input type="number" id="pgTotal" value="${saved.total}" min="1" placeholder="Total">
+        <button class="btn btn-primary" style="padding:0.4rem 0.9rem;font-size:0.82rem" onclick="saveProgress(${book.id})"><i class="fas fa-save"></i> Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="section-hdr"><i class="fas fa-book-reader"></i> About This Book</div>
+    <div class="desc-text">${summary}</div>
+  </div>
+
+  <div class="content-card">
+    <div class="section-hdr"><i class="fas fa-external-link-alt"></i> Access This Book</div>
+    <div class="desc-text">
+      <p>This book is freely available on the <strong>Internet Archive</strong> in multiple formats:</p>
+      <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.75rem">
+        <a href="${book.archiveUrl}" target="_blank" class="btn btn-primary"><i class="fas fa-globe"></i> Read Online</a>
+        <a href="${book.archiveUrl}/download" target="_blank" class="btn btn-outline"><i class="fas fa-download"></i> Download PDF</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ─── MAIN INIT ───
+(function(){
+  // Theme
+  const themeBtn=document.getElementById('themeBtn');
+  if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark');themeBtn.textContent='☀️';}
+  themeBtn.addEventListener('click',()=>{
+    document.body.classList.toggle('dark');
+    const d=document.body.classList.contains('dark');
+    localStorage.setItem('theme',d?'dark':'light');
+    themeBtn.textContent=d?'☀️':'🌙';
+  });
+
+  // Get book ID from URL
+  const params=new URLSearchParams(window.location.search);
+  const bookId=parseInt(params.get('id'));
+  if(!bookId){document.getElementById('bookContent').innerHTML='<p style="text-align:center;padding:3rem;color:#ef4444">Book not found. <a href="browse.html">Browse books</a></p>';return;}
+
+  // Try to get BOOKS from parent (browse) via sessionStorage
+  let book=null;
+  try{
+    const cached=sessionStorage.getItem('BOOKS_DATA');
+    if(cached){const arr=JSON.parse(cached);book=arr.find(b=>b.id===bookId);}
+  }catch(e){}
+
+  if(book){renderBook(book);return;}
+
+  // Fetch browse.html and extract BOOKS array dynamically
+  fetch('browse.html')
+    .then(r=>r.text())
+    .then(html=>{
+      const match=html.match(/const BOOKS\s*=\s*(\[[\s\S]*?\]);\s*\n\s*\/\/ ={3}/);
+      if(match){
+        try{
+          // Use Function constructor to safely eval the BOOKS array
+          const fn=new Function(`return ${match[1]}`);
+          const arr=fn();
+          try{sessionStorage.setItem('BOOKS_DATA',JSON.stringify(arr));}catch(e){}
+          book=arr.find(b=>b.id===bookId);
+          if(book){renderBook(book);}
+          else{document.getElementById('bookContent').innerHTML=`<p style="text-align:center;padding:3rem;color:#ef4444">Book #${bookId} not found. <a href="browse.html">Browse books</a></p>`;}
+        }catch(e){showFallback(bookId);}
+      }else{showFallback(bookId);}
+    })
+    .catch(()=>showFallback(bookId));
+
+  function showFallback(id){
+    // Show generic book page with Archive.org embed
+    document.getElementById('bookContent').innerHTML=`
+    <div class="content-card" style="text-align:center;padding:2rem">
+      <i class="fas fa-book" style="font-size:3rem;color:var(--primary);margin-bottom:1rem;display:block"></i>
+      <h2 style="margin-bottom:0.75rem">Book #${id}</h2>
+      <p style="color:var(--muted);margin-bottom:1.5rem">Loading book details...</p>
+      <a href="browse.html" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back to Browse</a>
+    </div>`;
+  }
+})();
+</script>
+</body>
+</html>

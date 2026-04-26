@@ -200,12 +200,15 @@
         }
         .view-all:hover { color: var(--primary-dark); text-decoration: underline; }
 
-        /* Featured horizontal scroll */
+        /* Featured grid - 4 columns like Kindle */
         .featured-scroll {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
         }
+        @media(max-width:1200px){.featured-scroll{grid-template-columns:repeat(3,1fr);}}
+        @media(max-width:768px){.featured-scroll{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:480px){.featured-scroll{grid-template-columns:1fr;}}
 
         .featured-card {
             background: white; border-radius: var(--radius);
@@ -272,9 +275,12 @@
         }
         .books-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
         }
+        @media(max-width:1200px){.books-grid{grid-template-columns:repeat(3,1fr);}}
+        @media(max-width:768px){.books-grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:480px){.books-grid{grid-template-columns:1fr;}}
         .book-card {
             background: white; border-radius: var(--radius);
             overflow: hidden; cursor: pointer;
@@ -316,9 +322,24 @@
         }
         .book-mini-stats {
             display: flex; justify-content: space-between; align-items: center;
-            font-size: 0.7rem; color: var(--muted);
+            font-size: 0.7rem; color: var(--muted); margin-bottom: 0.5rem;
         }
         .mini-stars { color: #f59e0b; font-size: 0.7rem; }
+        .btn-read-now {
+            width: 100%; background: var(--primary); color: white; border: none;
+            padding: 0.5rem; border-radius: 8px; font-size: 0.78rem; font-weight: 600;
+            cursor: pointer; font-family: inherit; transition: background 0.2s;
+            margin-top: 0.25rem;
+        }
+        .btn-read-now:hover { background: var(--primary-dark); }
+        .lib-btn {
+            position: absolute; top: 8px; right: 8px; z-index: 3;
+            background: rgba(0,0,0,0.6); color: white; border: none;
+            border-radius: 6px; padding: 0.2rem 0.4rem; font-size: 0.65rem;
+            cursor: pointer; font-weight: 600; transition: background 0.2s;
+        }
+        .lib-btn:hover { background: rgba(139,69,19,0.9); }
+        .lib-btn.in-lib { background: rgba(16,185,129,0.85); }
 
         /* ===== LOADING / EMPTY ===== */
         .loading-state { text-align: center; padding: 4rem; color: var(--primary); }
@@ -598,19 +619,7 @@
         </div>
     </div>
 
-    <!-- MODAL -->
-    <div class="modal-overlay" id="bookModal">
-        <div class="modal" id="modalContent">
-            <div class="modal-header" id="modalHeader">
-                <button class="modal-close" id="modalClose">✕</button>
-                <div class="modal-title" id="modalTitle">—</div>
-                <div class="modal-meta" id="modalMeta"></div>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Dynamic content -->
-            </div>
-        </div>
-    </div>
+    <!-- Modal removed - books now open on dedicated book-detail.html page -->
 
     <!-- SCROLL TO TOP -->
     <button class="scroll-top" id="scrollTop" title="Go to Top">
@@ -2437,6 +2446,211 @@
         }
     ];
 
+    // ============================================================
+    // STATE
+    // ============================================================
+    let currentCategory = 'all';
+    let currentSort = 'downloads';
+    let currentSearch = '';
+    let currentPage = 1;
+    const PAGE_SIZE = 24;
+    let comments = {};
+    try { comments = JSON.parse(localStorage.getItem('re_comments') || '{}'); } catch(e){}
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    function escHtml(s) {
+        if (!s) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function renderStars(r) {
+        const full = Math.floor(r), half = r % 1 >= 0.5;
+        let s = '';
+        for(let i=0;i<full;i++) s += '★';
+        if(half) s += '⯨';
+        for(let i=full+(half?1:0);i<5;i++) s += '☆';
+        return s;
+    }
+
+    function getCoverUrl(identifier) {
+        return `https://archive.org/services/img/${identifier}`;
+    }
+
+    function getGradient(category) {
+        const g = {
+            religion: 'linear-gradient(135deg, #1a1a2e, #16213e)',
+            literature: 'linear-gradient(135deg, #2d1b4e, #1a0a2e)',
+            fiction: 'linear-gradient(135deg, #0a2540, #0d3b6e)',
+            history: 'linear-gradient(135deg, #1a3a1a, #0d2a0d)',
+            science: 'linear-gradient(135deg, #0a1a3a, #051226)',
+            poetry: 'linear-gradient(135deg, #3a1a2e, #2a0a1e)',
+            comics: 'linear-gradient(135deg, #3a2a0a, #2a1a00)'
+        };
+        return g[category] || 'linear-gradient(135deg, #1e293b, #334155)';
+    }
+
+    // ============================================================
+    // OPEN BOOK → Navigate to detail page (NOT modal popup)
+    // ============================================================
+    window.openBook = function(bookId) {
+        window.location.href = `book-detail.html?id=${bookId}`;
+    };
+
+    // ============================================================
+    // ADD TO LIBRARY
+    // ============================================================
+    window.addToLibrary = function(bookId, e) {
+        e.stopPropagation();
+        const book = BOOKS.find(b => b.id === bookId);
+        if (!book) return;
+        let lib = [];
+        try { lib = JSON.parse(localStorage.getItem('myLibrary') || '[]'); } catch(e){}
+        const exists = lib.find(b => b.id === bookId);
+        if (!exists) {
+            lib.unshift({ id: book.id, identifier: book.identifier, title: book.title, author: book.author, category: book.category, rating: book.rating, addedAt: Date.now() });
+            try { localStorage.setItem('myLibrary', JSON.stringify(lib)); } catch(e){}
+            showToast('✅ Added to My Library!');
+        } else {
+            showToast('📚 Already in your library');
+        }
+    };
+
+    function showToast(msg) {
+        let t = document.getElementById('toast-msg');
+        if (!t) {
+            t = document.createElement('div');
+            t.id = 'toast-msg';
+            t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:0.75rem 1.5rem;border-radius:50px;font-weight:600;font-size:0.9rem;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,0.3);transition:opacity 0.3s';
+            document.body.appendChild(t);
+        }
+        t.textContent = msg;
+        t.style.opacity = '1';
+        setTimeout(() => { t.style.opacity = '0'; }, 2500);
+    }
+
+    // ============================================================
+    // RENDER BOOK CARD (Kindle-style, 4 per row)
+    // ============================================================
+    function renderCard(book) {
+        const cover = getCoverUrl(book.identifier);
+        const libBooks = [];
+        try { libBooks.push(...JSON.parse(localStorage.getItem('myLibrary') || '[]')); } catch(e){}
+        const inLib = libBooks.some(b => b.id === book.id);
+        return `
+        <div class="book-card" onclick="openBook(${book.id})" id="card-${book.id}">
+            <div class="book-cover-wrap">
+                <img class="book-cover-img" 
+                     src="${cover}" 
+                     alt="${escHtml(book.title)}"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="book-cover-placeholder" style="display:none;background:${getGradient(book.category)}">
+                    <span style="font-size:3rem">${book.coverEmoji || '📚'}</span>
+                    <span style="font-size:0.65rem;color:rgba(255,255,255,0.7);text-align:center;padding:0 0.5rem;line-height:1.3">${escHtml(book.title.substring(0,40))}</span>
+                </div>
+                <div class="book-license">${book.license}</div>
+                <button class="lib-btn ${inLib ? 'in-lib' : ''}" onclick="addToLibrary(${book.id}, event)" title="${inLib ? 'In Library' : 'Add to Library'}">
+                    ${inLib ? '✅' : '+ 📚'}
+                </button>
+            </div>
+            <div class="book-info">
+                <span class="book-genre">${escHtml(book.category)}</span>
+                <div class="book-title">${escHtml(book.title)}</div>
+                <div class="book-author">by ${escHtml(book.author)}</div>
+                <div class="book-mini-stats">
+                    <span class="mini-stars">${renderStars(book.rating)}</span>
+                    <span>${book.rating.toFixed(1)} (${book.ratingCount})</span>
+                </div>
+                <button class="btn-read-now" onclick="openBook(${book.id})">📖 Read Now</button>
+            </div>
+        </div>`;
+    }
+
+    // ============================================================
+    // RENDER FEATURED SECTION
+    // ============================================================
+    function renderFeatured() {
+        const featured = BOOKS.filter(b => b.featured);
+        const grid = document.getElementById('featuredGrid');
+        if (!grid) return;
+        if (featured.length === 0) {
+            document.getElementById('featuredSection').style.display = 'none';
+            return;
+        }
+        grid.innerHTML = featured.map(book => {
+            const cover = getCoverUrl(book.identifier);
+            return `
+            <div class="featured-card" onclick="openBook(${book.id})">
+                <div class="featured-badge">⭐ FEATURED</div>
+                <img class="featured-cover" 
+                     src="${cover}" 
+                     alt="${escHtml(book.title)}"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="featured-cover-placeholder" style="display:none;background:${getGradient(book.category)}">
+                    <span style="font-size:3.5rem">${book.coverEmoji || '📚'}</span>
+                </div>
+                <div class="featured-info">
+                    <span class="featured-category">${escHtml(book.category)}</span>
+                    <div class="featured-title">${escHtml(book.title)}</div>
+                    <div class="featured-author">by ${escHtml(book.author)}</div>
+                    <div class="star-rating">
+                        <span class="stars">${renderStars(book.rating)}</span>
+                        <span class="rating-text">${book.rating.toFixed(1)} (${book.ratingCount?.toLocaleString()})</span>
+                    </div>
+                    <div class="featured-downloads">⬇ ${book.downloads?.toLocaleString()} Downloads</div>
+                    <div class="featured-actions">
+                        <button class="btn-read" onclick="openBook(${book.id})">📖 Read</button>
+                        <a class="btn-amazon" href="${book.archiveUrl}" target="_blank" onclick="event.stopPropagation()">🌐 Archive</a>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ============================================================
+    // RENDER BOOKS GRID
+    // ============================================================
+    function getFilteredBooks() {
+        let books = [...BOOKS];
+        if (currentCategory !== 'all') books = books.filter(b => b.category === currentCategory);
+        if (currentSearch) {
+            const q = currentSearch.toLowerCase();
+            books = books.filter(b => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q));
+        }
+        if (currentSort === 'downloads') books.sort((a,b) => b.downloads - a.downloads);
+        else if (currentSort === 'az') books.sort((a,b) => a.title.localeCompare(b.title));
+        else if (currentSort === 'year') books.sort((a,b) => (parseInt(b.year)||0) - (parseInt(a.year)||0));
+        return books;
+    }
+
+    function renderBooks(reset) {
+        const grid = document.getElementById('booksGrid');
+        const loadWrap = document.getElementById('loadMoreWrap');
+        const countEl = document.getElementById('resultsCount');
+        if (!grid) return;
+        if (reset) currentPage = 1;
+        const all = getFilteredBooks();
+        const total = all.length;
+        const slice = all.slice(0, currentPage * PAGE_SIZE);
+        if (countEl) countEl.textContent = `${total} book${total !== 1 ? 's' : ''} found`;
+        if (reset) {
+            grid.innerHTML = slice.map(renderCard).join('');
+        } else {
+            const newCards = all.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+            grid.insertAdjacentHTML('beforeend', newCards.map(renderCard).join(''));
+        }
+        if (total === 0) {
+            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-book-open"></i><p>No books found. Try a different search.</p></div>`;
+        }
+        if (loadWrap) {
+            loadWrap.style.display = slice.length < total ? 'block' : 'none';
+        }
+    }
+
+    // ============================================================
+    // COMMENT / STAR (legacy support, kept for future use)
+    // ============================================================
     window.setCommentStar = function(bookId, star) {
         const container = document.getElementById(`cf-stars-${bookId}`);
         if (!container) return;
@@ -2451,40 +2665,10 @@
         const text = document.getElementById(`cf-text-${bookId}`)?.value?.trim();
         const star = parseInt(document.getElementById(`cf-stars-${bookId}`)?.dataset?.selected || '5');
         if (!name || !text) { alert('Please fill in both your name and comment.'); return; }
-
         if (!comments[bookId]) comments[bookId] = [];
-        comments[bookId].unshift({
-            name, rating: star, text,
-            date: new Date().toLocaleDateString('en-US', {day:'2-digit',month:'short',year:'numeric'})
-        });
+        comments[bookId].unshift({ name, rating: star, text, date: new Date().toLocaleDateString('en-US', {day:'2-digit',month:'short',year:'numeric'}) });
         try { localStorage.setItem('re_comments', JSON.stringify(comments)); } catch(e) {}
-
-        const list = document.getElementById(`comments-list-${bookId}`);
-        if (list) {
-            list.innerHTML = comments[bookId].map(c => `
-                <div class="comment-item">
-                    <div class="comment-header">
-                        <span class="comment-name">👤 ${c.name}</span>
-                        <span class="comment-date">${c.date}</span>
-                    </div>
-                    <div class="comment-stars">${renderStars(c.rating)}</div>
-                    <div class="comment-text">${c.text}</div>
-                </div>
-            `).join('');
-        }
-        document.getElementById(`cf-name-${bookId}`).value = '';
-        document.getElementById(`cf-text-${bookId}`).value = '';
     };
-
-    function closeModal() {
-        document.getElementById('bookModal').classList.remove('open');
-        document.body.style.overflow = '';
-    }
-
-    document.getElementById('modalClose').addEventListener('click', closeModal);
-    document.getElementById('bookModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
 
     function doSearch() {
         currentSearch = document.getElementById('searchInput').value.trim();
@@ -2494,6 +2678,7 @@
     document.getElementById('searchInput').addEventListener('keydown', e => {
         if (e.key === 'Enter') doSearch();
     });
+    document.getElementById('searchBtn')?.addEventListener('click', doSearch);
 
     document.querySelectorAll('.filter-pill').forEach(btn => {
         btn.addEventListener('click', () => {
