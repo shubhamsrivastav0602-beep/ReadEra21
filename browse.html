@@ -643,6 +643,7 @@
     // ============================================================
     // COMPLETE HINDI BOOKS DATABASE — Real Data from Internet Archive
     // ============================================================
+        const ADDITIONAL_BOOKS = [];
     const BOOKS = [
         {
             id: 1,
@@ -2342,7 +2343,7 @@
             ratingCount: 10,
             coverEmoji: "📚",
             coverGradient: "linear-gradient(135deg, #1e293b, #334155)",
-            featured: false, who was also the author of the  Pilgrim\'s Progress,  was written  in 1682 and is a wonderful allegory of Satan\'s war against man\'s soul. This book is very insightful about Satan\'s sch...</p>`
+            featured: false
         }
     ];
 
@@ -2575,6 +2576,7 @@
         currentSearch = document.getElementById('searchInput').value.trim();
         renderBooks(true);
     }
+    ];
 
     document.getElementById('searchInput').addEventListener('keydown', e => {
         if (e.key === 'Enter') doSearch();
