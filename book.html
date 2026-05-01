@@ -131,6 +131,40 @@
         .chapter-icon { transition: transform 0.3s; }
         .chapter-accordion.active .chapter-icon { transform: rotate(180deg); }
     </style>
+<style id="readera-responsive-patch">
+/* ===== RESPONSIVE PATCH ===== */
+:root { --safe-top: env(safe-area-inset-top,0px); --safe-bottom: env(safe-area-inset-bottom,0px); }
+* { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+body { padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+img, video { max-width: 100%; height: auto; }
+table { width: 100%; overflow-x: auto; display: block; }
+/* Fluid typography */
+h1 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
+h2 { font-size: clamp(1.25rem, 3vw, 2rem); }
+h3 { font-size: clamp(1rem, 2.5vw, 1.5rem); }
+p  { font-size: clamp(0.9rem, 1.5vw, 1.05rem); line-height: 1.75; }
+/* Input/button touch sizes */
+input, textarea, select, button, a.btn { min-height: 44px; }
+/* Dark mode form fix */
+body.dark-mode input, body.dark input,
+body.dark-mode textarea, body.dark textarea,
+body.dark-mode select, body.dark select {
+    background: #1e2535 !important; color: #e2e8f0 !important;
+    border-color: #2d3748 !important;
+}
+body.dark-mode ::placeholder, body.dark ::placeholder { color: #64748b; }
+/* Dark mode card/surface fix */
+body.dark-mode .card, body.dark .card,
+body.dark-mode .content-card, body.dark .content-card,
+body.dark-mode section, body.dark section { background: inherit; }
+/* Smooth scroll for anchor links */
+html { scroll-behavior: smooth; }
+/* Focus visible for accessibility */
+:focus-visible { outline: 2px solid var(--primary,#8B4513); outline-offset: 2px; }
+/* Better mobile tap targets for nav */
+.nav-primary li a { min-height: 44px; display: flex; align-items: center; }
+</style>
+<script src="js/theme.js"></script>
 </head>
 <body>
 

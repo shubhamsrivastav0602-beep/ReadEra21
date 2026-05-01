@@ -1,5 +1,19 @@
 // ============================================
 // READERA - DARK MODE THEME MANAGER
+// Anti-FOUC: apply dark immediately
+(function(){
+    try {
+        var t = localStorage.getItem('readera_theme') || localStorage.getItem('theme');
+        var sys = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (t === 'dark' || (!t && sys)) {
+            document.documentElement.classList.add('dark-mode-pending');
+            document.addEventListener('DOMContentLoaded', function() {
+                document.body.classList.add('dark-mode', 'dark');
+                document.documentElement.classList.remove('dark-mode-pending');
+            });
+        }
+    } catch(e) {}
+})();
 // ============================================
 
 const ThemeManager = {
@@ -11,6 +25,9 @@ const ThemeManager = {
         LIGHT: 'light',
         DARK: 'dark'
     },
+
+    // Possible button IDs (handling inconsistencies in the codebase)
+    BUTTON_IDS: ['theme-toggle', 'themeToggle', 'themeBtn'],
 
     // Initialize theme on page load
     init() {
@@ -36,21 +53,25 @@ const ThemeManager = {
 
     // Get saved theme from localStorage
     getSavedTheme() {
-        return localStorage.getItem(this.STORAGE_KEY);
+        // Support both old 'theme' key and new 'readera_theme' key
+        return localStorage.getItem(this.STORAGE_KEY) || localStorage.getItem('theme');
     },
 
     // Save theme to localStorage
     saveTheme(theme) {
         localStorage.setItem(this.STORAGE_KEY, theme);
+        localStorage.setItem('theme', theme); // Backwards compatibility
     },
 
     // Apply theme to body
     applyTheme(theme) {
         if (theme === this.THEMES.DARK) {
             document.body.classList.add('dark-mode');
+            document.body.classList.add('dark'); // Backwards compatibility
             this.updateToggleButtonIcon(true);
         } else {
             document.body.classList.remove('dark-mode');
+            document.body.classList.remove('dark'); // Backwards compatibility
             this.updateToggleButtonIcon(false);
         }
 
@@ -63,7 +84,7 @@ const ThemeManager = {
 
     // Toggle between light and dark
     toggleTheme() {
-        const isDarkMode = document.body.classList.contains('dark-mode');
+        const isDarkMode = document.body.classList.contains('dark-mode') || document.body.classList.contains('dark');
 
         if (isDarkMode) {
             this.applyTheme(this.THEMES.LIGHT);
@@ -76,37 +97,42 @@ const ThemeManager = {
 
     // Update toggle button icon based on current theme
     updateToggleButtonIcon(isDark) {
-        const toggleBtn = document.getElementById('theme-toggle');
-        if (!toggleBtn) return;
+        this.BUTTON_IDS.forEach(id => {
+            const toggleBtn = document.getElementById(id);
+            if (!toggleBtn) return;
 
-        if (isDark) {
-            toggleBtn.innerHTML = '☀️';
-            toggleBtn.setAttribute('aria-label', 'Switch to light mode');
-        } else {
-            toggleBtn.innerHTML = '🌙';
-            toggleBtn.setAttribute('aria-label', 'Switch to dark mode');
-        }
+            if (isDark) {
+                toggleBtn.innerHTML = '☀️';
+                toggleBtn.setAttribute('aria-label', 'Switch to light mode');
+            } else {
+                toggleBtn.innerHTML = '🌙';
+                toggleBtn.setAttribute('aria-label', 'Switch to dark mode');
+            }
+        });
     },
 
     // Setup theme toggle button event listener
     setupToggleButton() {
-        const toggleBtn = document.getElementById('theme-toggle');
-        if (toggleBtn) {
-            // Remove any existing listeners
-            const newToggleBtn = toggleBtn.cloneNode(true);
-            toggleBtn.parentNode.replaceChild(newToggleBtn, toggleBtn);
+        let found = false;
+        this.BUTTON_IDS.forEach(id => {
+            const toggleBtn = document.getElementById(id);
+            if (toggleBtn) {
+                found = true;
+                // Add listener directly instead of cloning to keep other potential listeners
+                // but we use a named function to avoid duplicates
+                toggleBtn.onclick = (e) => {
+                    e.preventDefault();
+                    this.toggleTheme();
+                };
 
-            // Add new listener
-            newToggleBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.toggleTheme();
-            });
+                // Update icon based on current state
+                const isDark = document.body.classList.contains('dark-mode') || document.body.classList.contains('dark');
+                this.updateToggleButtonIcon(isDark);
+            }
+        });
 
-            // Update icon based on current state
-            const isDark = document.body.classList.contains('dark-mode');
-            this.updateToggleButtonIcon(isDark);
-        } else {
-            console.warn('Theme toggle button not found! Make sure element with id="theme-toggle" exists.');
+        if (!found) {
+            console.warn('Theme toggle button not found! Check your button IDs.');
         }
     },
 
@@ -128,16 +154,23 @@ const ThemeManager = {
 
     // Show toast notification
     showToast(message, type = 'info') {
+        // Simple built-in toast if not defined elsewhere
+        if (window.showToast && typeof window.showToast === 'function' && !window.showToast.isThemeToast) {
+            window.showToast(message);
+            return;
+        }
+
         // Check if toast container exists
-        let toastContainer = document.getElementById('toast-container');
+        let toastContainer = document.getElementById('theme-toast-container');
         if (!toastContainer) {
             toastContainer = document.createElement('div');
-            toastContainer.id = 'toast-container';
+            toastContainer.id = 'theme-toast-container';
             toastContainer.style.cssText = `
                 position: fixed;
                 bottom: 20px;
                 right: 20px;
-                z-index: 9999;
+                z-index: 10000;
+                pointer-events: none;
             `;
             document.body.appendChild(toastContainer);
         }
@@ -158,84 +191,92 @@ const ThemeManager = {
             border-radius: 8px;
             font-size: 14px;
             font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: themeSlideIn 0.3s ease;
+            pointer-events: auto;
             cursor: pointer;
         `;
 
         toast.textContent = message;
         toastContainer.appendChild(toast);
 
-        // Auto remove after 2 seconds
+        // Auto remove
         setTimeout(() => {
-            toast.style.animation = 'slideOut 0.3s ease';
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s ease';
             setTimeout(() => toast.remove(), 300);
-        }, 2000);
+        }, 2500);
 
-        // Click to dismiss
-        toast.onclick = () => {
-            toast.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => toast.remove(), 300);
-        };
+        toast.onclick = () => toast.remove();
     },
 
-    // Get current theme
-    getCurrentTheme() {
-        return document.body.classList.contains('dark-mode') ? this.THEMES.DARK : this.THEMES.LIGHT;
-    },
-
-    // Preload theme before page render (to avoid flash)
+    // Preload theme immediately
     preloadTheme() {
         const savedTheme = this.getSavedTheme();
         const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
         if (savedTheme === this.THEMES.DARK || (!savedTheme && systemPrefersDark)) {
             document.body.classList.add('dark-mode');
+            document.body.classList.add('dark');
+        }
+    },
+
+    // Setup mobile menu
+    setupMobileMenu() {
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const navDrawer = document.getElementById('nav-drawer');
+        if (menuBtn && navDrawer) {
+            menuBtn.addEventListener('click', () => {
+                const isOpen = navDrawer.classList.toggle('is-open');
+                menuBtn.setAttribute('aria-expanded', isOpen);
+                const icon = menuBtn.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-bars', !isOpen);
+                    icon.classList.toggle('fa-times', isOpen);
+                }
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (navDrawer.classList.contains('is-open') && 
+                    !navDrawer.contains(e.target) && 
+                    !menuBtn.contains(e.target)) {
+                    navDrawer.classList.remove('is-open');
+                    menuBtn.setAttribute('aria-expanded', 'false');
+                    const icon = menuBtn.querySelector('i');
+                    if (icon) {
+                        icon.classList.add('fa-bars');
+                        icon.classList.remove('fa-times');
+                    }
+                }
+            });
         }
     }
 };
 
-// Add CSS animations for toast (if not already added)
-const toastAnimationStyles = document.createElement('style');
-toastAnimationStyles.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
+// Add CSS animations for toast
+if (!document.getElementById('theme-toast-styles')) {
+    const style = document.createElement('style');
+    style.id = 'theme-toast-styles';
+    style.textContent = `
+        @keyframes themeSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-`;
-
-// Only add styles if they don't exist
-if (!document.querySelector('#toast-animation-styles')) {
-    toastAnimationStyles.id = 'toast-animation-styles';
-    document.head.appendChild(toastAnimationStyles);
+    `;
+    document.head.appendChild(style);
 }
 
-// Preload theme immediately (prevents flash of wrong theme)
+// Preload theme immediately
 ThemeManager.preloadTheme();
 
 // Initialize theme when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     ThemeManager.init();
+    ThemeManager.setupMobileMenu();
 });
 
 // Make ThemeManager globally available
 window.ThemeManager = ThemeManager;
-
-console.log('✅ Theme Manager loaded successfully!');
+window.showToast = window.showToast || ThemeManager.showToast;
+window.showToast.isThemeToast = true;

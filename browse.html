@@ -22,77 +22,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        :root {
-            --primary: #8B4513;
-            --primary-dark: #6b3410;
-            --primary-light: rgba(139, 69, 19, 0.08);
-            --accent: #d4a373;
-            --gold: #f59e0b;
-            --dark: #0f172a;
-            --text: #1e293b;
-            --muted: #64748b;
-            --border: #e2e8f0;
-            --card-bg: #ffffff;
-            --bg: #f8fafc;
-            --shadow: 0 4px 20px rgba(0,0,0,0.08);
-            --shadow-hover: 0 16px 40px rgba(0,0,0,0.15);
-            --radius: 16px;
-            --radius-sm: 10px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ===== NAVBAR ===== */
-        .navbar {
-            background: #fff;
-            padding: 0.75rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-            border-bottom: 1px solid var(--border);
-        }
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        .logo a { color: var(--primary); font-size: 1.65rem; font-weight: 800; text-decoration: none; }
-        .logo a:hover { color: var(--primary-dark); }
-        .nav-primary { display: flex; gap: 0.25rem; list-style: none; flex-wrap: wrap; }
-        .nav-primary li a {
-            color: #334155; text-decoration: none; font-weight: 500;
-            padding: 0.5rem 0.75rem; border-radius: 8px; transition: all 0.2s;
-        }
-        .nav-primary li a:hover, .nav-primary li a.active {
-            color: var(--primary); background: var(--primary-light);
-        }
-        .nav-actions { display: flex; align-items: center; gap: 0.5rem; }
-        .theme-toggle {
-            background: #f8fafc; border: 2px solid var(--border);
-            border-radius: 12px; width: 42px; height: 42px; cursor: pointer; font-size: 1.1rem;
-            transition: all 0.2s;
-        }
-        .theme-toggle:hover { border-color: var(--primary); }
-
-        /* ===== HERO ===== */
+        /* ===== BROWSE SPECIFIC STYLES ===== */
         .hero {
-            background: linear-gradient(135deg, #8B4513 0%, #a0522d 30%, #c17a3a 65%, #d4a373 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             padding: 4rem 2rem 3rem;
             text-align: center;
@@ -530,21 +464,66 @@
             .modal-title { font-size: 1.2rem; }
         }
     </style>
+<style id="readera-responsive-patch">
+/* ===== RESPONSIVE PATCH ===== */
+:root { --safe-top: env(safe-area-inset-top,0px); --safe-bottom: env(safe-area-inset-bottom,0px); }
+* { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+body { padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+img, video { max-width: 100%; height: auto; }
+table { width: 100%; overflow-x: auto; display: block; }
+/* Fluid typography */
+h1 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
+h2 { font-size: clamp(1.25rem, 3vw, 2rem); }
+h3 { font-size: clamp(1rem, 2.5vw, 1.5rem); }
+p  { font-size: clamp(0.9rem, 1.5vw, 1.05rem); line-height: 1.75; }
+/* Input/button touch sizes */
+input, textarea, select, button, a.btn { min-height: 44px; }
+/* Dark mode form fix */
+body.dark-mode input, body.dark input,
+body.dark-mode textarea, body.dark textarea,
+body.dark-mode select, body.dark select {
+    background: #1e2535 !important; color: #e2e8f0 !important;
+    border-color: #2d3748 !important;
+}
+body.dark-mode ::placeholder, body.dark ::placeholder { color: #64748b; }
+/* Dark mode card/surface fix */
+body.dark-mode .card, body.dark .card,
+body.dark-mode .content-card, body.dark .content-card,
+body.dark-mode section, body.dark section { background: inherit; }
+/* Smooth scroll for anchor links */
+html { scroll-behavior: smooth; }
+/* Focus visible for accessibility */
+:focus-visible { outline: 2px solid var(--primary,#8B4513); outline-offset: 2px; }
+/* Better mobile tap targets for nav */
+.nav-primary li a { min-height: 44px; display: flex; align-items: center; }
+</style>
 </head>
 <body>
     <!-- NAVBAR -->
-    <nav class="navbar">
+    <nav class="navbar" aria-label="Main">
         <div class="nav-container">
-            <div class="logo"><a href="index.html">ReadEra</a></div>
-            <ul class="nav-primary">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="browse.html" class="active">Browse</a></li>
-                <li><a href="hindi-books.html">हिंदी Books</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="about.html">About</a></li>
-            </ul>
-            <div class="nav-actions">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">🌙</button>
+            <div class="logo">
+                <a href="index.html">ReadEra</a>
+            </div>
+            <button type="button" class="menu-toggle" id="mobile-menu-btn" aria-expanded="false"
+                aria-controls="nav-drawer" aria-label="Open menu">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="nav-drawer" id="nav-drawer">
+                <ul class="nav-primary">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="browse.html" class="active">Browse</a></li>
+                    <li><a href="hindi-books.html">हिंदी Books</a></li>
+                    <li id="library-link" style="display: none;"><a href="library.html">My Library</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button type="button" class="theme-toggle" id="theme-toggle"
+                        aria-label="Toggle dark mode">🌙</button>
+                    <a href="browse.html" class="btn btn-outline">Explore</a>
+                    <a href="auth.html" class="btn btn-ghost guest-only" id="auth-link">Log in</a>
+                    <a href="#" class="btn btn-outline user-only" id="logout-link" style="display: none;">Log out</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -2591,15 +2570,12 @@
         renderBooks(false);
     });
 
-    // Scroll to top
-    const scrollTopBtn = document.getElementById('scrollTop');
-    window.addEventListener('scroll', () => {
-        scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
-    });
-    scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+    // Mobile menu is now handled by ThemeManager in js/theme.js
 
-    // INIT
     renderBooks(true);
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/theme.js"></script>
 </body>
 </html>

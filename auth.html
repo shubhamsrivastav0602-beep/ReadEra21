@@ -5,168 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Sign Up - ReadEra</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f5f7fa;
-            color: #1a2a3a;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ========== NAVBAR ========== */
-        .navbar {
-            background: white;
-            padding: 0.75rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            border-bottom: 1px solid #eee;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .logo a {
-            color: #007185;
-            font-size: 1.65rem;
-            font-weight: 700;
-            text-decoration: none;
-            letter-spacing: -0.02em;
-        }
-
-        .logo a:hover {
-            color: #00505f;
-        }
-
-        .nav-primary {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            list-style: none;
-            flex-wrap: wrap;
-        }
-
-        .nav-primary>li>a {
-            color: #334155;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            padding: 0.5rem 0.75rem;
-            border-radius: 8px;
-            transition: background 0.2s, color 0.2s;
-        }
-
-        .nav-primary>li>a:hover,
-        .nav-primary>li>a[aria-current="page"] {
-            color: #007185;
-            background: rgba(0, 113, 133, 0.08);
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            font-family: inherit;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border-radius: 10px;
-            padding: 0.55rem 1rem;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
-            text-decoration: none;
-            border: 2px solid transparent;
-            line-height: 1.2;
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: #007185 !important;
-            border-color: #c4a574;
-        }
-
-        .btn-outline:hover {
-            background: rgba(0, 113, 133, 0.08);
-            border-color: #007185;
-        }
-
-        .btn-solid {
-            background: #007185;
-            color: #fff !important;
-            border-color: #007185;
-        }
-
-        .btn-solid:hover {
-            background: #00505f;
-        }
-
-        .theme-toggle {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            color: #475569;
-            border-radius: 12px;
-            width: 42px;
-            height: 42px;
-            padding: 0;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: background 0.2s, border-color 0.2s, color 0.2s;
-        }
-
-        .theme-toggle:hover {
-            background: #fff;
-            border-color: #007185;
-            color: #007185;
-        }
-
-        .menu-toggle {
-            display: none;
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            width: 44px;
-            height: 44px;
-            font-size: 1.25rem;
-            cursor: pointer;
-            color: #007185;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-drawer {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex: 1;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-        }
-
         /* ========== AUTH CONTAINER ========== */
         .auth-container {
             flex: 1;
@@ -177,18 +19,19 @@
         }
 
         .auth-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 24px;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow);
             width: 100%;
             max-width: 480px;
             overflow: hidden;
             transition: transform 0.2s;
+            border: 1px solid var(--border);
         }
 
         .auth-tabs {
             display: flex;
-            border-bottom: 1px solid #eef2f7;
+            border-bottom: 1px solid var(--border);
         }
 
         .tab-btn {
@@ -199,24 +42,24 @@
             background: none;
             border: none;
             cursor: pointer;
-            color: #64748b;
+            color: var(--muted);
             transition: all 0.2s;
             font-family: inherit;
         }
 
         .tab-btn.active {
-            color: #007185;
-            border-bottom: 2px solid #007185;
-            background: rgba(0, 113, 133, 0.03);
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            background: var(--primary-light);
         }
 
         .tab-btn:hover:not(.active) {
-            color: #007185;
-            background: #f8fafc;
+            color: var(--primary);
+            background: var(--bg);
         }
 
         .auth-form {
-            padding: 2rem;
+            padding: 2.3rem;
         }
 
         .form-group {
@@ -228,22 +71,24 @@
             margin-bottom: 0.5rem;
             font-weight: 500;
             font-size: 0.9rem;
-            color: #334155;
+            color: var(--text);
         }
 
         .form-group input {
             width: 100%;
             padding: 0.85rem 1rem;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--border);
             border-radius: 12px;
             font-size: 1rem;
+            background: var(--bg);
+            color: var(--text);
             font-family: inherit;
             transition: border-color 0.2s;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #007185;
+            border-color: var(--primary);
         }
 
         .form-group input.error {
@@ -264,7 +109,7 @@
         .submit-btn {
             width: 100%;
             padding: 0.9rem;
-            background: #007185;
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 12px;
@@ -276,11 +121,11 @@
         }
 
         .submit-btn:hover {
-            background: #00505f;
+            background: var(--primary-dark);
         }
 
         .submit-btn:disabled {
-            background: #cbd5e1;
+            background: var(--muted);
             cursor: not-allowed;
         }
 
@@ -288,13 +133,13 @@
             text-align: center;
             margin-top: 1.5rem;
             padding-top: 1.5rem;
-            border-top: 1px solid #eef2f7;
+            border-top: 1px solid var(--border);
             font-size: 0.85rem;
-            color: #64748b;
+            color: var(--muted);
         }
 
         .auth-footer a {
-            color: #007185;
+            color: var(--primary);
             text-decoration: none;
             font-weight: 500;
         }
@@ -337,75 +182,6 @@
             text-decoration: underline;
         }
 
-        /* ========== DARK MODE ========== */
-        body.dark-mode {
-            background: #0f172a;
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .navbar {
-            background: #111827;
-            border-color: #1f2937;
-        }
-
-        body.dark-mode .logo a {
-            color: #fbbf24;
-        }
-
-        body.dark-mode .nav-primary>li>a {
-            color: #cbd5e1;
-        }
-
-        body.dark-mode .nav-primary>li>a:hover {
-            color: #fbbf24;
-            background: rgba(251, 191, 36, 0.1);
-        }
-
-        body.dark-mode .theme-toggle {
-            background: #1f2937;
-            border-color: #334155;
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .auth-card {
-            background: #1f2937;
-            border: 1px solid #334155;
-        }
-
-        body.dark-mode .tab-btn {
-            color: #94a3b8;
-        }
-
-        body.dark-mode .tab-btn.active {
-            color: #fbbf24;
-            border-bottom-color: #fbbf24;
-        }
-
-        body.dark-mode .form-group label {
-            color: #cbd5e1;
-        }
-
-        body.dark-mode .form-group input {
-            background: #111827;
-            border-color: #334155;
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .form-group input:focus {
-            border-color: #fbbf24;
-        }
-
-        body.dark-mode .auth-footer {
-            border-top-color: #334155;
-        }
-
-        body.dark-mode .auth-footer a {
-            color: #fbbf24;
-        }
-
-        body.dark-mode .site-footer {
-            background: linear-gradient(180deg, #020617 0%, #000 100%);
-        }
 
         /* ========== MOBILE ========== */
         @media (max-width: 768px) {
@@ -448,6 +224,39 @@
             }
         }
     </style>
+<style id="readera-responsive-patch">
+/* ===== RESPONSIVE PATCH ===== */
+:root { --safe-top: env(safe-area-inset-top,0px); --safe-bottom: env(safe-area-inset-bottom,0px); }
+* { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+body { padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+img, video { max-width: 100%; height: auto; }
+table { width: 100%; overflow-x: auto; display: block; }
+/* Fluid typography */
+h1 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
+h2 { font-size: clamp(1.25rem, 3vw, 2rem); }
+h3 { font-size: clamp(1rem, 2.5vw, 1.5rem); }
+p  { font-size: clamp(0.9rem, 1.5vw, 1.05rem); line-height: 1.75; }
+/* Input/button touch sizes */
+input, textarea, select, button, a.btn { min-height: 44px; }
+/* Dark mode form fix */
+body.dark-mode input, body.dark input,
+body.dark-mode textarea, body.dark textarea,
+body.dark-mode select, body.dark select {
+    background: #1e2535 !important; color: #e2e8f0 !important;
+    border-color: #2d3748 !important;
+}
+body.dark-mode ::placeholder, body.dark ::placeholder { color: #64748b; }
+/* Dark mode card/surface fix */
+body.dark-mode .card, body.dark .card,
+body.dark-mode .content-card, body.dark .content-card,
+body.dark-mode section, body.dark section { background: inherit; }
+/* Smooth scroll for anchor links */
+html { scroll-behavior: smooth; }
+/* Focus visible for accessibility */
+:focus-visible { outline: 2px solid var(--primary,#8B4513); outline-offset: 2px; }
+/* Better mobile tap targets for nav */
+.nav-primary li a { min-height: 44px; display: flex; align-items: center; }
+</style>
 </head>
 
 <body>
@@ -457,15 +266,16 @@
             <div class="logo">
                 <a href="index.html">ReadEra</a>
             </div>
-            <button type="button" class="menu-toggle" id="mobile-menu-btn" aria-expanded="false">
-                <i class="fas fa-bars"></i>
+            <button type="button" class="menu-toggle" id="mobile-menu-btn" aria-expanded="false"
+                aria-controls="nav-drawer" aria-label="Open menu">
+                <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
             <div class="nav-drawer" id="nav-drawer">
                 <ul class="nav-primary">
                     <li><a href="index.html">Home</a></li>
                     <li><a href="browse.html">Browse</a></li>
+                    <li><a href="hindi-books.html">हिंदी Books</a></li>
                     <li><a href="contact.html">Contact</a></li>
-                    <li><a href="about.html">About</a></li>
                 </ul>
                 <div class="nav-actions">
                     <button type="button" class="theme-toggle" id="theme-toggle"

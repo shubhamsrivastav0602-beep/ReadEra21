@@ -4,223 +4,401 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Book Details - ReadEra</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
 <style>
-:root {
-  --primary:#007185; --primary-dark:#00505f; --accent:#f6a811;
-  --gold:#f59e0b; --dark:#0f172a; --text:#1e293b; --muted:#64748b;
-  --border:#e2e8f0; --card:#ffffff; --bg:#f8fafc;
-  --shadow:0 4px 20px rgba(0,0,0,0.08); --radius:12px;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+        /* ========== DETAIL PAGE STYLES ========== */
+        .page-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            flex: 1;
+        }
 
-/* NAV */
-.navbar{background:#fff;padding:0.75rem 1.5rem;position:sticky;top:0;z-index:1000;box-shadow:0 2px 12px rgba(0,0,0,0.06);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
-.logo a{color:var(--primary);font-size:1.65rem;font-weight:800;text-decoration:none;letter-spacing:-0.5px;}
-.nav-links{display:flex;gap:0.5rem;list-style:none;}
-.nav-links a{color:#334155;text-decoration:none;font-weight:600;padding:0.5rem 0.85rem;border-radius:8px;transition:all 0.2s;font-size:0.9rem;}
-.nav-links a:hover{color:var(--primary);background:rgba(0,113,133,0.08);}
-.nav-right{display:flex;align-items:center;gap:0.5rem;}
-.theme-btn{background:#f8fafc;border:2px solid var(--border);border-radius:10px;width:40px;height:40px;cursor:pointer;font-size:1.1rem;transition:all 0.2s;}
-.theme-btn:hover{border-color:var(--primary);}
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+        }
 
-/* CONTAINER */
-.page-wrap{max-width:1100px;margin:0 auto;padding:2rem 1.5rem;flex:1;}
-.back-btn{display:inline-flex;align-items:center;gap:0.4rem;color:var(--muted);text-decoration:none;font-size:0.9rem;margin-bottom:1.5rem;padding:0.4rem 0.8rem;border-radius:8px;transition:all 0.2s;border:1px solid var(--border);background:#fff;}
-.back-btn:hover{color:var(--primary);border-color:var(--primary);}
+        .back-btn:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
 
-/* HERO CARD */
-.book-hero{background:#fff;border-radius:20px;padding:2rem;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:2rem;}
-.cover-col{flex-shrink:0; position:relative;}
-.cover-img{width:220px;height:320px;object-fit:cover;border-radius:8px;box-shadow:0 12px 35px rgba(0,0,0,0.25);border:1px solid rgba(0,0,0,0.1); transition: transform 0.3s;}
-.cover-img:hover {transform: scale(1.03);}
-.cover-placeholder{width:220px;height:320px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.75rem;font-size:4rem;box-shadow:0 12px 35px rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.1); padding: 1rem; text-align:center; position:relative; overflow:hidden;}
-.cover-placeholder::before {content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url('data:image/svg+xml;utf8,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.05)"/></svg>');}
-.info-col{flex:1;min-width:0;}
-.book-badge{display:inline-block;background:rgba(0,113,133,0.1);color:var(--primary);font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:0.35rem 0.8rem;border-radius:4px;margin-bottom:0.75rem;}
-.book-title-lg{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;line-height:1.2;margin-bottom:0.5rem;color:var(--dark);}
-.book-author-lg{font-size:1.05rem;color:var(--muted);margin-bottom:1rem;}
-.book-meta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.75rem;margin-bottom:1.25rem;}
-.meta-item{background:var(--bg);border-radius:10px;padding:0.65rem 0.9rem;}
-.meta-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
-.meta-value{font-size:0.9rem;font-weight:600;margin-top:0.15rem;}
-.stars-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;font-size:1rem;}
-.stars{color:var(--gold);}
-.rating-num{font-weight:700;font-size:1.1rem;}
-.rating-count{color:var(--muted);font-size:0.85rem;}
-.action-btns{display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.5rem;}
-.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.7rem 1.4rem;border-radius:10px;font-weight:600;font-size:0.9rem;cursor:pointer;text-decoration:none;border:none;font-family:inherit;transition:all 0.2s;}
-.btn-primary{background:var(--primary);color:#fff;}
-.btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px);}
-.btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary);}
-.btn-outline:hover{background:var(--primary);color:#fff;}
-.btn-green{background:#10b981;color:#fff;}
-.btn-green:hover{background:#059669;}
-.btn-green.added{background:#059669;}
+        /* Hero Card */
+        .book-hero {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.3rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
 
-/* CONTENT SECTIONS */
-.content-card{background:#fff;border-radius:12px;padding:2rem;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:1.5rem;}
-.section-hdr{font-size:1.25rem;font-weight:700;color:var(--dark);margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem;border-bottom:2px solid var(--border);padding-bottom:0.75rem;}
-.section-hdr i{color:var(--primary); font-size:1.1rem;}
-.desc-text{font-size:1.05rem;line-height:1.8;color:#334155;font-family:'Inter',sans-serif;}
-.desc-text h2{color:var(--dark);font-size:1.5rem;margin:2.5rem 0 1rem;font-family:'Playfair Display',serif;border-bottom:1px solid var(--border);padding-bottom:0.5rem;}
-.desc-text h3{color:var(--primary);font-size:1.2rem;margin:2rem 0 1rem;font-weight:600;}
-.desc-text h4{color:var(--primary-dark);font-size:1.05rem;margin:1.5rem 0 0.5rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;}
-.desc-text p{margin-bottom:1.2rem;text-align:justify;}
-.desc-text ul{padding-left:1.5rem;margin-bottom:1.5rem;}
-.desc-text ul li{margin-bottom:0.5rem;padding-left:0.5rem;}
-.desc-text blockquote{border-left:4px solid var(--primary);padding:1rem 1.5rem;background:var(--bg);font-style:italic;margin:1.5rem 0;border-radius:0 8px 8px 0;color:#475569;}
+        .cover-col {
+            flex-shrink: 0;
+            position: relative;
+        }
 
-/* READING PROGRESS */
-.progress-wrap{background:var(--bg);border-radius:12px;padding:1rem;margin-bottom:1rem;}
-.progress-bar-outer{background:var(--border);border-radius:50px;height:10px;margin:0.5rem 0;}
-.progress-bar-inner{background:linear-gradient(90deg,var(--primary),var(--accent));height:100%;border-radius:50px;transition:width 0.5s;}
-.progress-controls{display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-top:0.75rem;}
-.progress-controls input{width:70px;padding:0.35rem 0.5rem;border:2px solid var(--border);border-radius:8px;font-family:inherit;font-size:0.85rem;}
-.progress-controls input:focus{outline:none;border-color:var(--primary);}
+        .cover-img {
+            width: 220px;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
 
-/* FOOTER */
-.site-footer{background:linear-gradient(180deg,#0c2744 0%,#061526 100%);color:#cbd5e1;padding:1.5rem;text-align:center;font-size:0.82rem;}
-.site-footer a{color:#cbd5e1;text-decoration:none;margin:0 0.75rem;}
-.site-footer a:hover{color:#fbbf24;}
+        .cover-img:hover {
+            transform: scale(1.03);
+        }
 
-/* DARK MODE */
-body.dark{background:#0f172a;color:#e2e8f0;}
-body.dark .navbar{background:#111827;border-color:#1f2937;}
-body.dark .logo a{color:#fbbf24;}
-body.dark .book-hero,body.dark .content-card{background:#1f2937;border-color:#334155;}
-body.dark .meta-item,body.dark .progress-wrap{background:#111827;}
-body.dark .book-title-lg{color:#e2e8f0;}
-body.dark .desc-text{color:#cbd5e1;}
-body.dark .back-btn{background:#1f2937;border-color:#334155;color:#94a3b8;}
-body.dark .section-hdr{color:#e2e8f0;border-color:#334155;}
-body.dark .theme-btn{background:#1f2937;border-color:#334155;color:#e2e8f0;}
+        .cover-placeholder {
+            width: 220px;
+            height: 320px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-size: 4rem;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-col {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .book-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.35rem 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+        }
+
+        .book-title-lg {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .book-author-lg {
+            font-size: 1.05rem;
+            color: var(--muted);
+            margin-bottom: 1.2rem;
+        }
+
+        .book-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 0.65rem 0.9rem;
+            border: 1px solid var(--border);
+        }
+
+        .meta-label {
+            font-size: 0.65rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .meta-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0.15rem;
+            color: var(--text);
+        }
+
+        .stars-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+        }
+
+        .stars {
+            color: var(--gold);
+        }
+
+        .rating-num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        .rating-count {
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .action-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Content Sections */
+        .content-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2.3rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-hdr {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.75rem;
+        }
+
+        .section-hdr i {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .desc-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Academic Analysis override */
+        .academic-analysis h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--text) !important;
+            border-bottom: 3px solid var(--primary) !important;
+        }
+
+        .academic-analysis h3 {
+            color: var(--primary) !important;
+            border-left: 5px solid var(--primary) !important;
+        }
+
+        .academic-analysis h4 {
+            color: var(--text) !important;
+        }
+
+        .academic-analysis p {
+            color: var(--muted) !important;
+        }
+
+        .chapter-card {
+            background: var(--bg) !important;
+            border: 1px solid var(--border) !important;
+        }
+
+        .chapter-card strong {
+            color: var(--primary) !important;
+        }
+
+        .academic-analysis blockquote {
+            background: var(--primary-light) !important;
+            border-left: 4px solid var(--primary) !important;
+            color: var(--text) !important;
+        }
+
+        /* Reading Progress */
+        .progress-wrap {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .progress-bar-outer {
+            background: var(--border);
+            border-radius: 50px;
+            height: 10px;
+            margin: 0.8rem 0;
+        }
+
+        .progress-bar-inner {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            height: 100%;
+            border-radius: 50px;
+            transition: width 0.5s;
+        }
+
+        .progress-controls {
+            display: flex;
+            gap: 0.7rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .progress-controls input {
+            width: 80px;
+            padding: 0.5rem 0.7rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .progress-controls input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .book-hero {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .book-title-lg {
+                font-size: 1.8rem;
+            }
+
+            .cover-img,
+            .cover-placeholder {
+                width: 180px;
+                height: 245px;
+            }
+        }
 body.dark .btn-outline{border-color:#fbbf24;color:#fbbf24;}
 body.dark .btn-outline:hover{background:#fbbf24;color:#0f172a;}
 
 @media(max-width:768px){.book-hero{flex-direction:column;align-items:center;text-align:center;}.book-title-lg{font-size:1.5rem;}.cover-img,.cover-placeholder{width:180px;height:245px;}}
 </style>
+<style id="readera-responsive-patch">
+/* ===== RESPONSIVE PATCH ===== */
+:root { --safe-top: env(safe-area-inset-top,0px); --safe-bottom: env(safe-area-inset-bottom,0px); }
+* { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+body { padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+img, video { max-width: 100%; height: auto; }
+table { width: 100%; overflow-x: auto; display: block; }
+/* Fluid typography */
+h1 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
+h2 { font-size: clamp(1.25rem, 3vw, 2rem); }
+h3 { font-size: clamp(1rem, 2.5vw, 1.5rem); }
+p  { font-size: clamp(0.9rem, 1.5vw, 1.05rem); line-height: 1.75; }
+/* Input/button touch sizes */
+input, textarea, select, button, a.btn { min-height: 44px; }
+/* Dark mode form fix */
+body.dark-mode input, body.dark input,
+body.dark-mode textarea, body.dark textarea,
+body.dark-mode select, body.dark select {
+    background: #1e2535 !important; color: #e2e8f0 !important;
+    border-color: #2d3748 !important;
+}
+body.dark-mode ::placeholder, body.dark ::placeholder { color: #64748b; }
+/* Dark mode card/surface fix */
+body.dark-mode .card, body.dark .card,
+body.dark-mode .content-card, body.dark .content-card,
+body.dark-mode section, body.dark section { background: inherit; }
+/* Smooth scroll for anchor links */
+html { scroll-behavior: smooth; }
+/* Focus visible for accessibility */
+:focus-visible { outline: 2px solid var(--primary,#8B4513); outline-offset: 2px; }
+/* Better mobile tap targets for nav */
+.nav-primary li a { min-height: 44px; display: flex; align-items: center; }
+</style>
 </head>
 <body>
 
-<nav class="navbar">
-  <div class="logo"><a href="index.html">ReadEra</a></div>
-  <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="browse.html">Browse</a></li>
-    <li><a href="hindi-books.html">हिंदी Books</a></li>
-    <li><a href="library.html">My Library</a></li>
-  </ul>
-  <div class="nav-right">
-    <button class="theme-btn" id="themeBtn">🌙</button>
-  </div>
-</nav>
+<nav class="navbar" aria-label="Main">
+    <div class="nav-container">
+        <div class="logo">
+            <a href="index.html">ReadEra</a>
+    <nav class="navbar" aria-label="Main">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">ReadEra</a>
+            </div>
+            <button type="button" class="menu-toggle" id="mobile-menu-btn" aria-expanded="false"
+                aria-controls="nav-drawer" aria-label="Open menu">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="nav-drawer" id="nav-drawer">
+                <ul class="nav-primary">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="browse.html">Browse</a></li>
+                    <li><a href="hindi-books.html">हिंदी Books</a></li>
+                    <li id="library-link" style="display: none;"><a href="library.html">My Library</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button type="button" class="theme-toggle" id="theme-toggle"
+                        aria-label="Toggle dark mode">🌙</button>
+                    <a href="browse.html" class="btn btn-outline">Explore</a>
+                    <a href="auth.html" class="btn btn-ghost" id="auth-link">Log in</a>
+                    <a href="#" class="btn btn-outline" id="logout-link" style="display: none;">Log out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
 <div class="page-wrap">
   <a href="javascript:history.back()" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
   <div id="bookContent"><p style="text-align:center;padding:3rem;color:var(--muted)"><i class="fas fa-spinner fa-spin" style="font-size:2rem"></i><br><br>Loading book...</p></div>
 </div>
 
-<footer class="site-footer">
-  <a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="about.html">About</a><a href="contact.html">Contact</a>
-  <p style="margin-top:0.5rem">© 2026 ReadEra — Free Digital Library</p>
-</footer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/theme.js"></script>
 
 <script>
-// ─── BOOKS DATA (shared with browse.html) ───
-// This file reads the book ID from URL and fetches from the same data
-// We embed a minimal lookup that works with browse.html BOOKS array
-
-// Load BOOKS from sessionStorage if available (set by browse.html)
-// Otherwise use URL params to show whatever data we have
-
 const SUMMARIES = {
   default: `
 <div class="academic-analysis">
     <h2>Comprehensive 10,000-Word Deep Dive & Literary Analysis</h2>
-    <p>Welcome to the ultimate, professional-grade analysis for this classic literary work. This comprehensive guide has been meticulously crafted to provide scholars, students, and avid readers with an exhaustive understanding of the book's themes, historical context, character development, and philosophical underpinnings. This structured breakdown represents a deep-dive academic analysis spanning the equivalent of a 10,000-word dissertation.</p>
-
-    <div class="analysis-section">
-        <h3>Part I: Historical and Cultural Context (The Genesis of Genius)</h3>
-        <h4>1. The Socio-Political Landscape of the Era</h4>
-        <p>Understanding the socio-political landscape of the era in which this book was published is crucial. The world was undergoing rapid transformation—industrialization, philosophical revolutions, and shifting societal norms deeply influenced the author's worldview. This text serves not merely as a narrative, but as a historical artifact capturing the anxieties and aspirations of its time. We examine the impact of the prevailing economic conditions, the rise of the middle class, and the lingering echoes of past conflicts that shaped the setting and the characters' motivations.</p>
-        <h4>2. The Author's Intellectual Background and Influences</h4>
-        <p>The author's personal life, struggles, and literary influences are interwoven into the fabric of the narrative. From early life experiences to their intellectual circle, every aspect of their existence contributed to the unique voice and profound insights found within these pages. Their work often challenged the status quo, making them a controversial yet pivotal figure in literary history. We delve into the specific philosophical schools—from existentialism to rationalism—that informed the author's approach to the human condition.</p>
-        <h4>3. Literary Movement and Genre Evolution</h4>
-        <p>This work stands as a cornerstone of its specific literary movement. Whether it be Romanticism's focus on emotion, Realism's dedication to the mundane, or Modernism's fragmentation of reality, this book pushed the boundaries of its genre. We analyze how the author adopted, subverted, and eventually redefined the conventions of their time to create something truly transcendent.</p>
-    </div>
-
-    <div class="analysis-section">
-        <h3>Part II: Extensive Character Analysis (The Architecture of the Soul)</h3>
-        <h4>1. The Protagonist's Psychological and Moral Evolution</h4>
-        <p>The central character undergoes a profound psychological and moral evolution. Initially presented with distinct flaws and desires, their journey is a masterclass in character arc development. Through a series of trials, betrayals, and revelations, they are forced to confront their deepest fears, ultimately leading to a transformative realization that resonates universally. We trace the character's development from innocence or ignorance to a state of complex understanding, noting the specific catalysts for change.</p>
-        <h4>2. The Antagonist: Mirror of Internal Conflict</h4>
-        <p>The opposition in this work is not always a literal villain, but often a manifestation of societal constraints or internal psychological battles. The antagonist serves as a dark reflection of the protagonist, representing the choices they didn't make or the paths they fear to tread. This duality creates a tension that drives the narrative forward beyond simple "good versus evil" tropes.</p>
-        <h4>3. Foil Characters and the Supporting Cast</h4>
-        <p>Foil characters are brilliantly utilized to highlight the protagonist's traits—where the protagonist is impulsive, the foil is calculating; where one is idealistic, the other is deeply cynical. Every supporting character, no matter how minor, contributes to the thematic depth of the work, representing different facets of the societal world the author has constructed.</p>
-    </div>
-
-    <div class="analysis-section">
-        <h3>Part III: Thematic Exploration (The Core Philosophical Pillars)</h3>
-        <h4>1. The Duality of Human Nature: Logic vs. Passion</h4>
-        <p>A recurring theme throughout the text is the inherent conflict within the human soul. The author explores the dichotomy between civilization and savagery, logic and emotion, morality and temptation. This duality is constantly tested through moral dilemmas that force characters into impossible choices. We explore how the resolution of these conflicts suggests the author's ultimate philosophical stance on human nature.</p>
-        <h4>2. Societal Critique and Class Struggle</h4>
-        <p>Beneath the surface narrative lies a scathing critique of class structures and societal hypocrisy. The text vividly portrays the disparities between the affluent and the marginalized, using allegorical elements to question the fairness and sustainability of the established social order. The author's use of setting—from decaying mansions to bustling city streets—reinforces this critique.</p>
-        <h4>3. Fate, Free Will, and the Burden of Choice</h4>
-        <p>Is our destiny written in the stars, or is it forged through our actions? This work grapples with the tension between deterministic forces (ancestry, society, prophecy) and the individual's capacity for choice. We examine how the narrative's climax hinges on a singular act of will that either defies or fulfills the characters' perceived fate.</p>
-    </div>
-
-    <div class="analysis-section">
-        <h3>Part IV: Literary Devices and Stylistic Brilliance</h3>
-        <blockquote>"The beauty of this work lies in its meticulous attention to prose, where every metaphor serves a dual purpose—advancing the plot while enriching the thematic depth." — Distinguished Literary Journal</blockquote>
-        <h4>1. Symbolism and Recurring Motifs</h4>
-        <p>The author employs a rich tapestry of symbolism. From the use of changing seasons to reflect character moods to the symbolic use of light and darkness, every detail is intentional. We identify and decode the major motifs—such as the recurring image of a bird in a cage or the persistent presence of a specific color—to reveal the hidden layers of meaning within the text.</p>
-        <h4>2. Narrative Perspective and Reliable Unreliability</h4>
-        <p>The choice of narrator significantly impacts the reader's perception of truth. We analyze whether the perspective is an omniscient observer, an intimate first-person account, or a multi-vocal tapestry. In many cases, the "unreliability" of the narrator is a deliberate tool used to engage the reader in a process of critical inquiry and skepticism.</p>
-        <h4>3. The Intricacy of Structure and Pacing</h4>
-        <p>The book's structure—whether linear, epistolary, or non-linear—is designed to mirror its themes. We examine how the author manipulates time and tension to create a sense of inevitability or suspense, leading to a climax that is both emotionally satisfying and intellectually stimulating.</p>
-    </div>
-
-    <div class="analysis-section">
-        <h3>Part V: Detailed Chapter-by-Chapter Breakdown</h3>
-        <div class="chapter-grid">
-            <div class="chapter-card"><strong>Phase 1: The Inciting Incident (Ch 1-10)</strong> <p>Introduction of the status quo and the disruption that forces the protagonist into action. Establishing the primary setting and the initial moral stakes.</p></div>
-            <div class="chapter-card"><strong>Phase 2: The Rising Tension (Ch 11-25)</strong> <p>Introduction of major complications. The protagonist meets key allies and enemies. The central philosophical conflict becomes apparent.</p></div>
-            <div class="chapter-card"><strong>Phase 3: The Point of No Return (Ch 26-40)</strong> <p>Characters are forced to make irrevocable decisions. The setting shifts to reflect the heightening internal and external stakes.</p></div>
-            <div class="chapter-card"><strong>Phase 4: The Climax and Revelation (Ch 41-55)</strong> <p>The ultimate confrontation where all narrative threads converge. A profound truth is revealed that changes the characters forever.</p></div>
-            <div class="chapter-card"><strong>Phase 5: The Aftermath and Resolution (Ch 56-End)</strong> <p>Exploration of the "new normal." The protagonist deals with the consequences of their choices, leading to a poignant, often ambiguous conclusion.</p></div>
-        </div>
-    </div>
-
-    <div class="analysis-section">
-        <h3>Part VI: Modern Relevance and Academic Legacy</h3>
-        <h4>1. Why We Read It Today: Universal Truths</h4>
-        <p>Despite the passage of time, the core questions posed by this book remain strikingly relevant. It challenges modern readers to examine their own lives, societies, and moral compasses. The human condition, with all its flaws and triumphs, is perfectly encapsulated here, proving that great literature transcends the boundaries of time and geography.</p>
-        <h4>2. Influence on Contemporary Media and Pop Culture</h4>
-        <p>The echoes of this work can be seen in countless modern novels, films, and philosophical debates. It established tropes that have become foundational in its genre and inspired generations of writers to push the boundaries of storytelling. We examine specific modern adaptations and how they reinterpret the book's core message for a new generation.</p>
-    </div>
-
-    <div class="analysis-section">
-        <h3>Conclusion: The Enduring Power of the Written Word</h3>
-        <p>To read this book is to engage in a conversation with history. It demands attention, introspection, and a willingness to confront uncomfortable truths. As you embark on reading this masterpiece, keep these analytical points in mind to fully appreciate the depth and brilliance of the author's vision. This text remains a testament to the power of storytelling to enlighten, challenge, and ultimately unite us through our shared human experience.</p>
-    </div>
+    <p>Welcome to the ultimate, professional-grade analysis for this classic literary work.</p>
 </div>
-
-<style>
-.academic-analysis { font-family: 'Inter', sans-serif; max-width: 1000px; margin: 0 auto; color: #334155; }
-.academic-analysis h2 { font-family: 'Playfair Display', serif; color: #0f172a; border-bottom: 3px solid #007185; padding-bottom: 1rem; margin: 2rem 0; font-size: 2.2rem; }
-.academic-analysis h3 { color: #007185; font-size: 1.5rem; margin: 2.5rem 0 1rem; border-left: 5px solid #007185; padding-left: 1rem; }
-.academic-analysis h4 { color: #0f172a; font-size: 1.2rem; margin: 1.5rem 0 0.75rem; font-weight: 700; }
-.academic-analysis p { line-height: 1.9; margin-bottom: 1.5rem; text-align: justify; font-size: 1.05rem; }
-.analysis-section { background: #fff; padding: 1.5rem 0; border-bottom: 1px solid #e2e8f0; }
-.chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
-.chapter-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 12px; transition: all 0.2s; }
-.chapter-card:hover { transform: translateY(-3px); border-color: #007185; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-.chapter-card strong { display: block; color: #007185; margin-bottom: 0.5rem; }
-.academic-analysis blockquote { font-family: 'Playfair Display', serif; font-style: italic; border-left: 4px solid #f6a811; padding: 1.5rem; background: #fff9f0; margin: 2rem 0; font-size: 1.1rem; color: #475569; }
-</style>
 `
 };
 
@@ -228,10 +406,7 @@ function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replac
 function renderStars(r){const f=Math.floor(r),h=r%1>=0.5;let s='';for(let i=0;i<f;i++)s+='★';if(h)s+='⯨';for(let i=f+(h?1:0);i<5;i++)s+='☆';return s;}
 function getGradient(cat){const g={religion:'linear-gradient(135deg,#0f172a,#1e293b)',literature:'linear-gradient(135deg,#1e3a8a,#1e40af)',fiction:'linear-gradient(135deg,#047857,#059669)',history:'linear-gradient(135deg,#7f1d1d,#991b1b)',science:'linear-gradient(135deg,#0284c7,#0369a1)',poetry:'linear-gradient(135deg,#7e22ce,#9333ea)'};return g[cat?.toLowerCase()]||'linear-gradient(135deg,#334155,#475569)';}
 
-// Improved HD Cover Logic
 function getCoverUrl(book){
-    // If it has an ISBN or specific OpenLibrary ID, we could use that. 
-    // Since we only have IA identifier, we use the IA high-res image API or fallback.
     return `covers/eng-${book.id}.jpg`;
 }
 
@@ -258,7 +433,6 @@ function saveProgress(bookId){
   const pct=total>0?Math.min(100,Math.round(pg/total*100)):0;
   document.getElementById('progressBar').style.width=pct+'%';
   document.getElementById('progressPct').textContent=pct+'%';
-  // Also update myLibrary tracking
   let lib=[];try{lib=JSON.parse(localStorage.getItem('myLibrary')||'[]');}catch(e){}
   const entry=lib.find(b=>b.id===bookId);
   if(entry){entry.progress=pct;entry.lastPage=pg;try{localStorage.setItem('myLibrary',JSON.stringify(lib));}catch(e){}}
@@ -355,16 +529,6 @@ function renderBook(book){
 
 // ─── MAIN INIT ───
 (function(){
-  // Theme
-  const themeBtn=document.getElementById('themeBtn');
-  if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark');themeBtn.textContent='☀️';}
-  themeBtn.addEventListener('click',()=>{
-    document.body.classList.toggle('dark');
-    const d=document.body.classList.contains('dark');
-    localStorage.setItem('theme',d?'dark':'light');
-    themeBtn.textContent=d?'☀️':'🌙';
-  });
-
   // Get book ID from URL
   const params=new URLSearchParams(window.location.search);
   const bookId=parseInt(params.get('id'));
@@ -409,6 +573,8 @@ function renderBook(book){
     </div>`;
   }
 })();
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/theme.js"></script>
 </body>
 </html>

@@ -5,8 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReadEra - Your Digital Library</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
         * {
             margin: 0;
@@ -805,6 +806,39 @@
             .books-grid { grid-template-columns: repeat(2,1fr); }
         }
     </style>
+<style id="readera-responsive-patch">
+/* ===== RESPONSIVE PATCH ===== */
+:root { --safe-top: env(safe-area-inset-top,0px); --safe-bottom: env(safe-area-inset-bottom,0px); }
+* { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+body { padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+img, video { max-width: 100%; height: auto; }
+table { width: 100%; overflow-x: auto; display: block; }
+/* Fluid typography */
+h1 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
+h2 { font-size: clamp(1.25rem, 3vw, 2rem); }
+h3 { font-size: clamp(1rem, 2.5vw, 1.5rem); }
+p  { font-size: clamp(0.9rem, 1.5vw, 1.05rem); line-height: 1.75; }
+/* Input/button touch sizes */
+input, textarea, select, button, a.btn { min-height: 44px; }
+/* Dark mode form fix */
+body.dark-mode input, body.dark input,
+body.dark-mode textarea, body.dark textarea,
+body.dark-mode select, body.dark select {
+    background: #1e2535 !important; color: #e2e8f0 !important;
+    border-color: #2d3748 !important;
+}
+body.dark-mode ::placeholder, body.dark ::placeholder { color: #64748b; }
+/* Dark mode card/surface fix */
+body.dark-mode .card, body.dark .card,
+body.dark-mode .content-card, body.dark .content-card,
+body.dark-mode section, body.dark section { background: inherit; }
+/* Smooth scroll for anchor links */
+html { scroll-behavior: smooth; }
+/* Focus visible for accessibility */
+:focus-visible { outline: 2px solid var(--primary,#8B4513); outline-offset: 2px; }
+/* Better mobile tap targets for nav */
+.nav-primary li a { min-height: 44px; display: flex; align-items: center; }
+</style>
 </head>
 
 <body>
@@ -823,7 +857,7 @@
                     <li><a href="index.html" aria-current="page">Home</a></li>
                     <li><a href="browse.html">Browse</a></li>
                     <li><a href="hindi-books.html">हिंदी Books</a></li>
-                    <li><a href="library.html">My Library</a></li>
+                    <li id="library-link" style="display: none;"><a href="library.html">My Library</a></li>
                     <li><a href="contact.html">Contact</a></li>
                 </ul>
                 <div class="nav-actions">
@@ -1069,40 +1103,7 @@
             return div.innerHTML;
         }
 
-        // Update auth UI
-        async function updateAuthUI() {
-            const isLoggedIn = await AuthService.isAuthenticated();
-            const libraryLink = document.getElementById('library-link');
-            const profileLink = document.getElementById('profile-link');
-            const authLink = document.getElementById('auth-link');
-            const logoutLink = document.getElementById('logout-link');
-            const heroLibraryCta = document.getElementById('hero-library-cta');
-
-            if (isLoggedIn) {
-                if (libraryLink) libraryLink.style.display = 'list-item';
-                if (profileLink) profileLink.style.display = 'list-item';
-                if (authLink) authLink.style.display = 'none';
-                if (logoutLink) logoutLink.style.display = 'inline-flex';
-                if (heroLibraryCta) heroLibraryCta.style.display = 'inline-flex';
-            } else {
-                if (libraryLink) libraryLink.style.display = 'none';
-                if (profileLink) profileLink.style.display = 'none';
-                if (authLink) authLink.style.display = 'inline-flex';
-                if (logoutLink) logoutLink.style.display = 'none';
-                if (heroLibraryCta) heroLibraryCta.style.display = 'none';
-            }
-        }
-
-        // Setup logout handler
-        function setupLogout() {
-            const logoutBtn = document.getElementById('logout-link');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    await AuthService.signOut();
-                });
-            }
-        }
+        // AuthService.signOut is now handled by syncAuthUI in js/supabase.js
 
         // Event Listeners
         document.getElementById('searchBtn')?.addEventListener('click', searchBooks);
@@ -1110,19 +1111,11 @@
             if (e.key === 'Enter') searchBooks();
         });
 
-        // Mobile menu toggle
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const navDrawer = document.getElementById('nav-drawer');
-        if (menuBtn && navDrawer) {
-            menuBtn.addEventListener('click', () => {
-                const open = navDrawer.classList.toggle('is-open');
-                menuBtn.setAttribute('aria-expanded', open);
-            });
-        }
+        // Mobile menu is now handled by ThemeManager in js/theme.js
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
-            updateAuthUI();
+            // syncAuthUI is called automatically by js/supabase.js
             loadFeaturedBooks();
             loadRecentReads();
         });

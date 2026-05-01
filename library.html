@@ -5,224 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Library - ReadEra</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f5f7fa;
-            color: #1a2a3a;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        main {
-            flex: 1;
-        }
-
-        /* ========== NAVBAR (same as index) ========== */
-        .navbar {
-            background: white;
-            padding: 0.75rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            border-bottom: 1px solid #eee;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .logo a {
-            color: #8B4513;
-            font-size: 1.65rem;
-            font-weight: 700;
-            text-decoration: none;
-            letter-spacing: -0.02em;
-        }
-
-        .logo a:hover {
-            color: #6b3410;
-        }
-
-        .nav-primary {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            list-style: none;
-            flex-wrap: wrap;
-        }
-
-        .nav-primary>li>a {
-            color: #334155;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            padding: 0.5rem 0.75rem;
-            border-radius: 8px;
-            transition: background 0.2s, color 0.2s;
-        }
-
-        .nav-primary>li>a:hover,
-        .nav-primary>li>a[aria-current="page"] {
-            color: #8B4513;
-            background: rgba(139, 69, 19, 0.08);
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            font-family: inherit;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border-radius: 10px;
-            padding: 0.55rem 1rem;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
-            text-decoration: none;
-            border: 2px solid transparent;
-            line-height: 1.2;
-        }
-
-        .btn-solid {
-            background: #8B4513;
-            color: #fff !important;
-            border-color: #8B4513;
-        }
-
-        .btn-solid:hover {
-            background: #6b3410;
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: #8B4513 !important;
-            border-color: #c4a574;
-        }
-
-        .btn-outline:hover {
-            background: rgba(139, 69, 19, 0.08);
-            border-color: #8B4513;
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: #475569 !important;
-            border-color: transparent;
-            padding: 0.55rem 0.65rem;
-        }
-
-        .btn-ghost:hover {
-            background: #f1f5f9;
-            color: #8B4513 !important;
-        }
-
-        .theme-toggle {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            color: #475569;
-            border-radius: 12px;
-            width: 42px;
-            height: 42px;
-            padding: 0;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: background 0.2s, border-color 0.2s, color 0.2s;
-        }
-
-        .theme-toggle:hover {
-            background: #fff;
-            border-color: #8B4513;
-            color: #8B4513;
-        }
-
-        .menu-toggle {
-            display: none;
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            width: 44px;
-            height: 44px;
-            font-size: 1.25rem;
-            cursor: pointer;
-            color: #8B4513;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-drawer {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex: 1;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-        }
-
-        /* ========== LIBRARY HEADER ========== */
-        .library-header {
-            background: linear-gradient(135deg, #8B4513 0%, #a0522d 45%, #c17a3a 100%);
-            color: white;
-            padding: 3rem 1.5rem;
-            text-align: center;
-        }
-
-        .library-header h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .library-header p {
-            font-size: 1rem;
-            opacity: 0.9;
-        }
-
-        /* ========== LIBRARY CONTAINER ========== */
-        .library-container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
-        }
-
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-
         .stat-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 1.25rem;
             text-align: center;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            border: 1px solid #eef2f7;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
             transition: transform 0.2s;
         }
 
@@ -232,19 +25,19 @@
 
         .stat-icon {
             font-size: 2rem;
-            color: #8B4513;
+            color: var(--primary);
             margin-bottom: 0.5rem;
         }
 
         .stat-value {
             font-size: 1.75rem;
             font-weight: 700;
-            color: #0a2540;
+            color: var(--text);
         }
 
         .stat-label {
             font-size: 0.85rem;
-            color: #64748b;
+            color: var(--muted);
             margin-top: 0.25rem;
         }
 
@@ -253,7 +46,7 @@
             display: flex;
             gap: 0.5rem;
             margin-bottom: 2rem;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid var(--border);
             padding-bottom: 0.5rem;
             flex-wrap: wrap;
         }
@@ -263,7 +56,7 @@
             background: transparent;
             border: none;
             font-weight: 600;
-            color: #64748b;
+            color: var(--muted);
             cursor: pointer;
             border-radius: 10px;
             transition: all 0.2s;
@@ -271,12 +64,12 @@
         }
 
         .tab-btn:hover {
-            background: rgba(139, 69, 19, 0.08);
-            color: #8B4513;
+            background: var(--primary-light);
+            color: var(--primary);
         }
 
         .tab-btn.active {
-            background: #8B4513;
+            background: var(--primary);
             color: white;
         }
 
@@ -301,21 +94,23 @@
             left: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            color: #94a3b8;
+            color: var(--muted);
         }
 
         .search-wrapper input {
             width: 100%;
             padding: 0.8rem 1rem 0.8rem 2.5rem;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--border);
             border-radius: 12px;
+            background: var(--card-bg);
+            color: var(--text);
             font-family: inherit;
             transition: border-color 0.2s;
         }
 
         .search-wrapper input:focus {
             outline: none;
-            border-color: #8B4513;
+            border-color: var(--primary);
         }
 
         .filter-options {
@@ -325,76 +120,53 @@
 
         .filter-select {
             padding: 0.8rem;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--border);
             border-radius: 12px;
             font-family: inherit;
-            background: white;
+            background: var(--card-bg);
+            color: var(--text);
             cursor: pointer;
         }
 
-        /* Books Grid */
-        .books-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-        }
-
         .library-book-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             overflow: hidden;
             display: flex;
-            gap: 1rem;
-            padding: 1rem;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            border: 1px solid #eef2f7;
+            flex-direction: column;
+            gap: 0;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .library-book-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .book-cover-small {
-            width: 100px;
-            flex-shrink: 0;
-        }
-
-        .book-cover-small img {
-            width: 100%;
-            height: 130px;
-            object-fit: cover;
-            border-radius: 10px;
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
         }
 
         .book-details {
-            flex: 1;
-            min-width: 0;
+            padding: 1rem;
         }
 
         .book-title-small {
             font-weight: 700;
             font-size: 1rem;
-            color: #0a2540;
+            color: var(--text);
             margin-bottom: 0.25rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
 
         .book-author-small {
             font-size: 0.8rem;
-            color: #64748b;
+            color: var(--muted);
             margin-bottom: 0.5rem;
         }
 
         .book-genre-small {
             display: inline-block;
             font-size: 0.7rem;
-            background: rgba(139, 69, 19, 0.1);
-            color: #8B4513;
+            background: var(--primary-light);
+            color: var(--primary);
             padding: 0.2rem 0.5rem;
             border-radius: 12px;
             margin-bottom: 0.75rem;
@@ -409,26 +181,25 @@
             display: flex;
             justify-content: space-between;
             font-size: 0.7rem;
-            color: #64748b;
+            color: var(--muted);
             margin-bottom: 0.25rem;
         }
 
         .progress-bar-bg {
-            background: #e2e8f0;
+            background: var(--border);
             border-radius: 10px;
             height: 6px;
             overflow: hidden;
         }
 
         .progress-bar-fill {
-            background: #8B4513;
+            background: var(--primary);
             height: 100%;
             width: 0%;
             border-radius: 10px;
             transition: width 0.3s;
         }
 
-        /* Book Actions */
         .book-actions-small {
             display: flex;
             gap: 0.5rem;
@@ -446,52 +217,43 @@
             display: inline-flex;
             align-items: center;
             gap: 0.3rem;
+            border: 1px solid transparent;
         }
 
         .read-btn {
-            background: #8B4513;
+            background: var(--primary);
             color: white;
-            border: none;
-        }
-
-        .read-btn:hover {
-            background: #6b3410;
         }
 
         .remove-btn {
             background: transparent;
             color: #ef4444;
-            border: 1px solid #ef4444;
-        }
-
-        .remove-btn:hover {
-            background: #ef4444;
-            color: white;
+            border-color: #ef4444;
         }
 
         .favorite-btn {
             background: transparent;
-            color: #fbbf24;
-            border: 1px solid #fbbf24;
+            color: var(--gold);
+            border-color: var(--gold);
         }
 
         .favorite-btn.active {
-            background: #fbbf24;
+            background: var(--gold);
             color: white;
         }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
-            background: white;
+            background: var(--card-bg);
             border-radius: 20px;
-            border: 1px solid #eef2f7;
+            border: 1px solid var(--border);
+            grid-column: 1 / -1;
         }
 
         .empty-state i {
             font-size: 4rem;
-            color: #cbd5e1;
+            color: var(--muted);
             margin-bottom: 1rem;
         }
 
@@ -701,6 +463,39 @@
             }
         }
     </style>
+<style id="readera-responsive-patch">
+/* ===== RESPONSIVE PATCH ===== */
+:root { --safe-top: env(safe-area-inset-top,0px); --safe-bottom: env(safe-area-inset-bottom,0px); }
+* { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+body { padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+img, video { max-width: 100%; height: auto; }
+table { width: 100%; overflow-x: auto; display: block; }
+/* Fluid typography */
+h1 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
+h2 { font-size: clamp(1.25rem, 3vw, 2rem); }
+h3 { font-size: clamp(1rem, 2.5vw, 1.5rem); }
+p  { font-size: clamp(0.9rem, 1.5vw, 1.05rem); line-height: 1.75; }
+/* Input/button touch sizes */
+input, textarea, select, button, a.btn { min-height: 44px; }
+/* Dark mode form fix */
+body.dark-mode input, body.dark input,
+body.dark-mode textarea, body.dark textarea,
+body.dark-mode select, body.dark select {
+    background: #1e2535 !important; color: #e2e8f0 !important;
+    border-color: #2d3748 !important;
+}
+body.dark-mode ::placeholder, body.dark ::placeholder { color: #64748b; }
+/* Dark mode card/surface fix */
+body.dark-mode .card, body.dark .card,
+body.dark-mode .content-card, body.dark .content-card,
+body.dark-mode section, body.dark section { background: inherit; }
+/* Smooth scroll for anchor links */
+html { scroll-behavior: smooth; }
+/* Focus visible for accessibility */
+:focus-visible { outline: 2px solid var(--primary,#8B4513); outline-offset: 2px; }
+/* Better mobile tap targets for nav */
+.nav-primary li a { min-height: 44px; display: flex; align-items: center; }
+</style>
 </head>
 
 <body>
@@ -710,18 +505,17 @@
             <div class="logo">
                 <a href="index.html">ReadEra</a>
             </div>
-            <button type="button" class="menu-toggle" id="mobile-menu-btn" aria-expanded="false">
-                <i class="fas fa-bars"></i>
+            <button type="button" class="menu-toggle" id="mobile-menu-btn" aria-expanded="false"
+                aria-controls="nav-drawer" aria-label="Open menu">
+                <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
             <div class="nav-drawer" id="nav-drawer">
                 <ul class="nav-primary">
                     <li><a href="index.html">Home</a></li>
                     <li><a href="browse.html">Browse</a></li>
-                    <li id="library-link" style="display: none;"><a href="library.html" aria-current="page">My
-                            Library</a></li>
-                    <li id="profile-link" style="display: none;"><a href="profile.html">Profile</a></li>
+                    <li><a href="hindi-books.html">हिंदी Books</a></li>
+                    <li id="library-link" style="display: none;"><a href="library.html" aria-current="page">My Library</a></li>
                     <li><a href="contact.html">Contact</a></li>
-                    <li><a href="about.html">About</a></li>
                 </ul>
                 <div class="nav-actions">
                     <button type="button" class="theme-toggle" id="theme-toggle"
@@ -804,10 +598,8 @@
                 <a href="disclaimer.html">Disclaimer</a>
                 <a href="about.html">About</a>
             </div>
-            <p>&copy; 2026 ReadEra. All rights reserved.</p>
-        </div>
-    </footer>
-
+            <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
     <script src="js/theme.js"></script>
     <script>
         // ── Library reads from localStorage (set by browse.html & book-detail.html) ──
@@ -914,15 +706,15 @@
             });
         });
 
-        // Mobile menu
-        const menuBtn=document.getElementById('mobile-menu-btn');
-        const navDrawer=document.getElementById('nav-drawer');
-        if(menuBtn&&navDrawer){menuBtn.addEventListener('click',()=>navDrawer.classList.toggle('is-open'));}
+        // Mobile menu is now handled by ThemeManager in js/theme.js
 
         loadLibrary();
     </script>
 
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/theme.js"></script>
 </body>
 
 </html>

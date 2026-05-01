@@ -5,173 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy - ReadEra</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f5f7fa;
-            color: #1a2a3a;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        main {
-            flex: 1;
-        }
-
-        /* ========== NAVBAR ========== */
-        .navbar {
-            background: white;
-            padding: 0.75rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            border-bottom: 1px solid #eee;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .logo a {
-            color: #8B4513;
-            font-size: 1.65rem;
-            font-weight: 700;
-            text-decoration: none;
-            letter-spacing: -0.02em;
-        }
-
-        .logo a:hover {
-            color: #6b3410;
-        }
-
-        .nav-primary {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            list-style: none;
-            flex-wrap: wrap;
-        }
-
-        .nav-primary>li>a {
-            color: #334155;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            padding: 0.5rem 0.75rem;
-            border-radius: 8px;
-            transition: background 0.2s, color 0.2s;
-        }
-
-        .nav-primary>li>a:hover {
-            color: #8B4513;
-            background: rgba(139, 69, 19, 0.08);
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            font-family: inherit;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border-radius: 10px;
-            padding: 0.55rem 1rem;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
-            text-decoration: none;
-            border: 2px solid transparent;
-            line-height: 1.2;
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: #8B4513 !important;
-            border-color: #c4a574;
-        }
-
-        .btn-outline:hover {
-            background: rgba(139, 69, 19, 0.08);
-            border-color: #8B4513;
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: #475569 !important;
-            border-color: transparent;
-            padding: 0.55rem 0.65rem;
-        }
-
-        .btn-ghost:hover {
-            background: #f1f5f9;
-            color: #8B4513 !important;
-        }
-
-        .theme-toggle {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            color: #475569;
-            border-radius: 12px;
-            width: 42px;
-            height: 42px;
-            padding: 0;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: background 0.2s, border-color 0.2s, color 0.2s;
-        }
-
-        .theme-toggle:hover {
-            background: #fff;
-            border-color: #8B4513;
-            color: #8B4513;
-        }
-
-        .menu-toggle {
-            display: none;
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            width: 44px;
-            height: 44px;
-            font-size: 1.25rem;
-            cursor: pointer;
-            color: #8B4513;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-drawer {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex: 1;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-        }
-
         /* ========== LEGAL CONTENT ========== */
         .legal-container {
             max-width: 1000px;
@@ -186,42 +23,42 @@
 
         .legal-header h1 {
             font-size: 2rem;
-            color: #8B4513;
+            color: var(--primary);
             margin-bottom: 0.5rem;
         }
 
         .legal-header p {
-            color: #64748b;
+            color: var(--muted);
             font-size: 0.9rem;
         }
 
         .legal-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            border: 1px solid #eef2f7;
+            padding: 2.3rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
         }
 
         .last-updated {
-            background: rgba(139, 69, 19, 0.08);
+            background: var(--primary-light);
             padding: 0.75rem 1rem;
             border-radius: 12px;
             margin-bottom: 2rem;
             font-size: 0.85rem;
-            color: #8B4513;
+            color: var(--primary);
             text-align: center;
         }
 
         .toc {
-            background: #f8fafc;
+            background: var(--bg);
             padding: 1.5rem;
             border-radius: 16px;
             margin-bottom: 2rem;
         }
 
         .toc h3 {
-            color: #0a2540;
+            color: var(--text);
             margin-bottom: 1rem;
             font-size: 1.1rem;
         }
@@ -233,7 +70,7 @@
         }
 
         .toc-link {
-            color: #8B4513;
+            color: var(--primary);
             text-decoration: none;
             font-size: 0.9rem;
             display: inline-flex;
@@ -245,13 +82,13 @@
 
         .toc-link:hover {
             padding-left: 0.5rem;
-            color: #6b3410;
+            color: var(--primary-dark);
         }
 
         .legal-section {
             margin-bottom: 2rem;
             padding-bottom: 1.5rem;
-            border-bottom: 1px solid #eef2f7;
+            border-bottom: 1px solid var(--border);
         }
 
         .legal-section:last-child {
@@ -261,8 +98,8 @@
         }
 
         .legal-section h2 {
-            color: #0a2540;
-            font-size: 1.3rem;
+            font-size: 1.25rem;
+            color: var(--text);
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
@@ -270,26 +107,26 @@
         }
 
         .legal-section h2 i {
-            color: #8B4513;
+            color: var(--primary);
             font-size: 1.2rem;
         }
 
         .legal-section h3 {
-            color: #334155;
+            color: var(--text);
             font-size: 1.1rem;
             margin: 1rem 0 0.5rem;
         }
 
         .legal-section p {
             line-height: 1.7;
-            color: #475569;
+            color: var(--muted);
             margin-bottom: 1rem;
         }
 
         .legal-section ul,
         .legal-section ol {
             margin: 1rem 0 1rem 1.5rem;
-            color: #475569;
+            color: var(--muted);
             line-height: 1.7;
         }
 
@@ -298,132 +135,12 @@
         }
 
         .highlight-box {
-            background: rgba(139, 69, 19, 0.05);
-            border-left: 4px solid #8B4513;
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
             padding: 1rem 1.5rem;
             border-radius: 12px;
             margin: 1rem 0;
-        }
-
-        /* ========== FOOTER ========== */
-        .site-footer {
-            background: linear-gradient(180deg, #0c2744 0%, #061526 100%);
-            color: #cbd5e1;
-            margin-top: 3rem;
-            padding: 2rem 1.5rem 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .footer-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .footer-bottom-links {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.35rem 1rem;
-            margin-bottom: 0.65rem;
-        }
-
-        .footer-bottom-links a {
-            color: #cbd5e1;
-            text-decoration: none;
-            font-size: 0.82rem;
-        }
-
-        .footer-bottom-links a:hover {
-            color: #fbbf24;
-        }
-
-        /* ========== DARK MODE ========== */
-        body.dark-mode {
-            background: #0f172a;
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .navbar {
-            background: #111827;
-            border-color: #1f2937;
-        }
-
-        body.dark-mode .logo a {
-            color: #fbbf24;
-        }
-
-        body.dark-mode .nav-primary>li>a {
-            color: #cbd5e1;
-        }
-
-        body.dark-mode .nav-primary>li>a:hover {
-            color: #fbbf24;
-            background: rgba(251, 191, 36, 0.1);
-        }
-
-        body.dark-mode .legal-card {
-            background: #1f2937;
-            border-color: #334155;
-        }
-
-        body.dark-mode .legal-header h1 {
-            color: #fbbf24;
-        }
-
-        body.dark-mode .legal-section h2 {
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .legal-section h3 {
-            color: #cbd5e1;
-        }
-
-        body.dark-mode .legal-section p,
-        body.dark-mode .legal-section ul,
-        body.dark-mode .legal-section li {
-            color: #94a3b8;
-        }
-
-        body.dark-mode .toc {
-            background: #111827;
-        }
-
-        body.dark-mode .toc h3 {
-            color: #fbbf24;
-        }
-
-        body.dark-mode .toc-link {
-            color: #94a3b8;
-        }
-
-        body.dark-mode .toc-link:hover {
-            color: #fbbf24;
-        }
-
-        body.dark-mode .last-updated {
-            background: rgba(251, 191, 36, 0.1);
-            color: #fbbf24;
-        }
-
-        body.dark-mode .highlight-box {
-            background: rgba(251, 191, 36, 0.08);
-            border-left-color: #fbbf24;
-        }
-
-        body.dark-mode .theme-toggle {
-            background: #1f2937;
-            border-color: #334155;
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .theme-toggle:hover {
-            border-color: #fbbf24;
-            color: #fbbf24;
-        }
-
-        body.dark-mode .site-footer {
-            background: linear-gradient(180deg, #020617 0%, #000 100%);
+            color: var(--text);
         }
 
         /* ========== MOBILE ========== */
@@ -471,6 +188,39 @@
             }
         }
     </style>
+<style id="readera-responsive-patch">
+/* ===== RESPONSIVE PATCH ===== */
+:root { --safe-top: env(safe-area-inset-top,0px); --safe-bottom: env(safe-area-inset-bottom,0px); }
+* { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+body { padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+img, video { max-width: 100%; height: auto; }
+table { width: 100%; overflow-x: auto; display: block; }
+/* Fluid typography */
+h1 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
+h2 { font-size: clamp(1.25rem, 3vw, 2rem); }
+h3 { font-size: clamp(1rem, 2.5vw, 1.5rem); }
+p  { font-size: clamp(0.9rem, 1.5vw, 1.05rem); line-height: 1.75; }
+/* Input/button touch sizes */
+input, textarea, select, button, a.btn { min-height: 44px; }
+/* Dark mode form fix */
+body.dark-mode input, body.dark input,
+body.dark-mode textarea, body.dark textarea,
+body.dark-mode select, body.dark select {
+    background: #1e2535 !important; color: #e2e8f0 !important;
+    border-color: #2d3748 !important;
+}
+body.dark-mode ::placeholder, body.dark ::placeholder { color: #64748b; }
+/* Dark mode card/surface fix */
+body.dark-mode .card, body.dark .card,
+body.dark-mode .content-card, body.dark .content-card,
+body.dark-mode section, body.dark section { background: inherit; }
+/* Smooth scroll for anchor links */
+html { scroll-behavior: smooth; }
+/* Focus visible for accessibility */
+:focus-visible { outline: 2px solid var(--primary,#8B4513); outline-offset: 2px; }
+/* Better mobile tap targets for nav */
+.nav-primary li a { min-height: 44px; display: flex; align-items: center; }
+</style>
 </head>
 
 <body>
@@ -480,17 +230,17 @@
             <div class="logo">
                 <a href="index.html">ReadEra</a>
             </div>
-            <button type="button" class="menu-toggle" id="mobile-menu-btn" aria-expanded="false">
-                <i class="fas fa-bars"></i>
+            <button type="button" class="menu-toggle" id="mobile-menu-btn" aria-expanded="false"
+                aria-controls="nav-drawer" aria-label="Open menu">
+                <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
             <div class="nav-drawer" id="nav-drawer">
                 <ul class="nav-primary">
                     <li><a href="index.html">Home</a></li>
                     <li><a href="browse.html">Browse</a></li>
+                    <li><a href="hindi-books.html">हिंदी Books</a></li>
                     <li id="library-link" style="display: none;"><a href="library.html">My Library</a></li>
-                    <li id="profile-link" style="display: none;"><a href="profile.html">Profile</a></li>
                     <li><a href="contact.html">Contact</a></li>
-                    <li><a href="about.html">About</a></li>
                 </ul>
                 <div class="nav-actions">
                     <button type="button" class="theme-toggle" id="theme-toggle"
