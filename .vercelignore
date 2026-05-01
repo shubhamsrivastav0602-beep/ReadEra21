@@ -1,0 +1,16 @@
+# Ignore Python scripts and generators
+book-generator/
+*.py
+*.sql
+*.sh
+*.ps1
+
+# Ignore backups and environment files
+ReadEra21-main/
+.env
+.gitignore
+.vercelignore
+
+# Ignore unnecessary folders
+.gemini/
+.git/
