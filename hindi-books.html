@@ -1223,12 +1223,13 @@ html { scroll-behavior: smooth; }
     scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
 
     // INIT
+    renderFeatured();
+    renderBooks(true);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script src="js/theme.js"></script>
     <script>
-    renderBooks(true);
     </script>
 </body>
 </html>
