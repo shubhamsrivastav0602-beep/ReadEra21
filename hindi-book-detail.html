@@ -441,6 +441,7 @@ html { scroll-behavior: smooth; }
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script src="js/theme.js"></script>
+<script src="js/hindi-books-data.js"></script>
     <script src="js/hindi-summaries.js" onerror="console.log('Summaries not yet generated')"></script>
 
 <script>
@@ -669,49 +670,17 @@ function renderBook(book){
 
   if(book){renderBook(book);return;}
 
-  // Fetch hindi-books.html and extract BOOKS array dynamically
-  fetch('hindi-books.html')
-    .then(r=>r.text())
-    .then(html=>{
-      const match1=html.match(/const BOOKS\s*=\s*(\[[\s\S]*?\]);/);
-      const match2=html.match(/const ADDITIONAL_BOOKS\s*=\s*(\[[\s\S]*?\]);/);
-      if(match1 || match2){
-        try{
-          let books1 = [];
-          let books2 = [];
-          if(match1){
-             const fn1=new Function(\`return \${match1[1]}\`);
-             books1 = fn1();
-          }
-          if(match2){
-             const fn2=new Function(\`return \${match2[1]}\`);
-             books2 = fn2();
-          }
-          const arr = [...books1, ...books2];
-          try{sessionStorage.setItem('HINDI_BOOKS_DATA',JSON.stringify(arr));}catch(e){}
-          book=arr.find(b=>b.id===bookId);
-          if(book){renderBook(book);}
-          else{document.getElementById('bookContent').innerHTML=\`<p style="text-align:center;padding:3rem;color:#ef4444">Book #\${bookId} not found. <a href="hindi-books.html">Browse books</a></p>\`;}
-        }catch(e){console.error(e); showFallback(bookId);}
-      }else{showFallback(bookId);}
-    })
-    .catch((e)=>{console.error(e); showFallback(bookId);});
-
-  function showFallback(id){
-    // Show generic book page with Archive.org embed
-    document.getElementById('bookContent').innerHTML=`
-    <div class="content-card" style="text-align:center;padding:2rem">
-      <i class="fas fa-book" style="font-size:3rem;color:var(--primary);margin-bottom:1rem;display:block"></i>
-      <h2 style="margin-bottom:0.75rem">Book #${id}</h2>
-      <p style="color:var(--muted);margin-bottom:1.5rem">Loading book details...</p>
-      <a href="hindi-books.html" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back to Browse</a>
-    </div>`;
-  }
+  
+  book = window.ALL_HINDI_BOOKS.find(b => b.id === bookId);
+  if(book) renderBook(book);
+  else document.getElementById('bookContent').innerHTML = `<p style="text-align:center;padding:3rem;color:#ef4444">Book #${bookId} not found. <a href="hindi-books.html">Browse books</a></p>`;
 })();
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/theme.js"></script>
+<script src="js/hindi-books-data.js"></script>
 <script>
 // ===== READING EXPERIENCE ENHANCEMENTS =====
 // 1. Scroll reading progress

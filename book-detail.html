@@ -391,6 +391,7 @@ html { scroll-behavior: smooth; }
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script src="js/theme.js"></script>
+<script src="js/english-books-data.js"></script>
 
 <script>
 const SUMMARIES = {
@@ -543,39 +544,16 @@ function renderBook(book){
 
   if(book){renderBook(book);return;}
 
-  // Fetch browse.html and extract BOOKS array dynamically
-  fetch('browse.html')
-    .then(r=>r.text())
-    .then(html=>{
-      const match=html.match(/const BOOKS\s*=\s*(\[[\s\S]*?\]);\s*\n\s*\/\/ ={3}/);
-      if(match){
-        try{
-          // Use Function constructor to safely eval the BOOKS array
-          const fn=new Function(`return ${match[1]}`);
-          const arr=fn();
-          try{sessionStorage.setItem('BOOKS_DATA',JSON.stringify(arr));}catch(e){}
-          book=arr.find(b=>b.id===bookId);
-          if(book){renderBook(book);}
-          else{document.getElementById('bookContent').innerHTML=`<p style="text-align:center;padding:3rem;color:#ef4444">Book #${bookId} not found. <a href="browse.html">Browse books</a></p>`;}
-        }catch(e){showFallback(bookId);}
-      }else{showFallback(bookId);}
-    })
-    .catch(()=>showFallback(bookId));
-
-  function showFallback(id){
-    // Show generic book page with Archive.org embed
-    document.getElementById('bookContent').innerHTML=`
-    <div class="content-card" style="text-align:center;padding:2rem">
-      <i class="fas fa-book" style="font-size:3rem;color:var(--primary);margin-bottom:1rem;display:block"></i>
-      <h2 style="margin-bottom:0.75rem">Book #${id}</h2>
-      <p style="color:var(--muted);margin-bottom:1.5rem">Loading book details...</p>
-      <a href="browse.html" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back to Browse</a>
-    </div>`;
-  }
+  
+  book = window.ENGLISH_BOOKS_DATA.find(b => b.id === bookId);
+  if(book) renderBook(book);
+  else document.getElementById('bookContent').innerHTML = `<p style="text-align:center;padding:3rem;color:#ef4444">Book #${bookId} not found. <a href="browse.html">Browse books</a></p>`;
 })();
+
 </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script src="js/theme.js"></script>
+<script src="js/english-books-data.js"></script>
 </body>
 </html>
