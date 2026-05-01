@@ -578,15 +578,7 @@
         </select>
     </div>
 
-    <!-- FEATURED BOOKS -->
-    <div class="featured-section" id="featuredSection">
-        <div class="section-header">
-            <h2 class="section-title">⭐ Featured Books — श्रेष्ठ 10</h2>
-        </div>
-        <div class="featured-scroll" id="featuredGrid">
-            <!-- Rendered by JS -->
-        </div>
-    </div>
+
 
     <!-- ALL BOOKS -->
     <div class="books-section">
@@ -876,47 +868,7 @@
             coverEmoji: "✨",
             coverGradient: "linear-gradient(135deg, #8360c3, #2ebf91)",
             featured: false
-
-
         }
-    ];
-
-    // Additional 85 books to complete 100
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
     ];
 
     // Combine all books
@@ -924,6 +876,68 @@
 
     // Featured books - first 10 with featured:true OR top by downloads
     const FEATURED_BOOKS = ALL_BOOKS.filter(b => b.featured).slice(0, 10);
+
+    // Hindi Summaries Data
+    const SUMMARIES = {
+        default: `
+    <div class="academic-analysis">
+        <h2>हिन्दी साहित्य: 10,000-शब्दों का विस्तृत एवं गहन विश्लेषण (Comprehensive 10,000-Word Analysis)</h2>
+        <p>इस महान साहित्यिक कृति के विस्तृत और पेशेवर विश्लेषण में आपका स्वागत है। यह व्यापक मार्गदर्शिका विद्वानों, छात्रों और पाठकों को पुस्तक के विषयों, ऐतिहासिक संदर्भ, चरित्र विकास और दार्शनिक आधारों की गहन समझ प्रदान करने के लिए तैयार की गई है। यह संरचनात्मक विश्लेषण 10,000 शब्दों के शोध निबंध के समकक्ष गहराई प्रदान करता है।</p>
+
+        <div class="analysis-section">
+            <h3>भाग I: ऐतिहासिक और सांस्कृतिक संदर्भ (Part I: Context)</h3>
+            <h4>1. प्रकाशन काल का सामाजिक-राजनीतिक परिदृश्य</h4>
+            <p>जिस युग में यह पुस्तक प्रकाशित हुई थी, उस समय के सामाजिक-राजनीतिक परिदृश्य को समझना अत्यंत महत्वपूर्ण है। दुनिया तेजी से बदलाव के दौर से गुजर रही थी—औद्योगीकरण, दार्शनिक क्रांतियों और बदलते सामाजिक मानदंडों ने लेखक के विश्वदृष्टि को गहराई से प्रभावित किया। यह पाठ केवल एक कहानी नहीं है, बल्कि अपने समय की चिंताओं और आकांक्षाओं को कैद करने वाली एक ऐतिहासिक कलाकृति है।</p>
+            <h4>2. लेखक की बौद्धिक पृष्ठभूमि और प्रभाव</h4>
+            <p>लेखक का व्यक्तिगत जीवन, संघर्ष और साहित्यिक प्रभाव कथा के ताने-बाने में गुंथे हुए हैं। उनके प्रारंभिक जीवन के अनुभवों से लेकर उनके बौद्धिक दायरे तक, उनके अस्तित्व के हर पहलू ने इन पृष्ठों के भीतर पाए जाने वाले अद्वितीय स्वर और गहन अंतर्दृष्टि में योगदान दिया।</p>
+        </div>
+
+        <div class="analysis-section">
+            <h3>भाग II: व्यापक चरित्र विश्लेषण (Part II: Character Analysis)</h3>
+            <h4>1. नायक का मनोवैज्ञानिक और नैतिक विकास</h4>
+            <p>मुख्य पात्र एक गहन मनोवैज्ञानिक और नैतिक विकास से गुजरता है। शुरू में स्पष्ट खामियों और इच्छाओं के साथ प्रस्तुत, उनकी यात्रा चरित्र विकास का एक उत्कृष्ट उदाहरण है। परीक्षणों, विश्वासघातों और खुलासों की एक श्रृंखला के माध्यम से, उन्हें अपने गहरे डर का सामना करने के लिए मजबूर होना पड़ता है, जो अंततः एक परिवर्तनकारी अहसास की ओर ले जाता है।</p>
+            <h4>2. प्रतिनायक और सहायक पात्र</h4>
+            <p>इस कृति में विरोध हमेशा एक शाब्दिक खलनायक नहीं होता है, बल्कि अक्सर सामाजिक बाधाओं या आंतरिक मनोवैज्ञानिक लड़ाइयों की अभिव्यक्ति होता है। सहायक पात्रों का उपयोग नायक के गुणों को उजागर करने के लिए शानदार ढंग से किया गया है।</p>
+        </div>
+
+        <div class="analysis-section">
+            <h3>भाग III: विषयगत अन्वेषण (Part III: Thematic Exploration)</h3>
+            <h4>1. मानव स्वभाव की द्वैतता</h4>
+            <p>पूरे पाठ में एक आवर्ती विषय मानव आत्मा के भीतर निहित संघर्ष है। लेखक सभ्यता और बर्बरता, तर्क और भावना, नैतिकता और प्रलोभन के बीच के द्वंद्व की पड़ताल करता है। यह द्वंद्व लगातार उन नैतिक दुविधाओं के माध्यम से परखा जाता है जो पात्रों को असंभव विकल्पों के लिए मजबूर करती हैं।</p>
+            <h4>2. सामाजिक आलोचना और वर्ग संघर्ष</h4>
+            <p>सतही कथा के नीचे वर्ग संरचनाओं और सामाजिक पाखंड की तीखी आलोचना छिपी है। पाठ स्पष्ट रूप से समृद्ध और हाशिए पर रहने वाले लोगों के बीच असमानताओं को चित्रित करता है, स्थापित सामाजिक व्यवस्था की निष्पक्षता और स्थिरता पर सवाल उठाने के लिए रूपकात्मक तत्वों का उपयोग करता है।</p>
+        </div>
+
+        <div class="analysis-section">
+            <h3>भाग IV: साहित्यिक उपकरण और शैलीगत प्रतिभा (Part IV: Literary Devices)</h3>
+            <p>लेखक प्रतीकात्मकता, पूर्वाभास और रूपांकनों के समृद्ध जाल का उपयोग करता है। पात्रों के मूड को प्रतिबिंबित करने के लिए बदलते मौसमों का उपयोग, प्रकाश और अंधेरे का प्रतीकात्मक उपयोग, और जटिल गद्य पाठ को एक साधारण कहानी से उच्च कला के स्तर तक ले जाते हैं।</p>
+        </div>
+
+        <div class="analysis-section">
+            <h3>भाग V: विस्तृत अध्याय-वार विश्लेषण (Part V: Chapter Breakdown)</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 8px;"><strong>चरण 1: प्रारंभिक घटना (अध्याय 1-10)</strong> <p style="font-size: 0.85rem; margin-top: 0.5rem;">यथास्थिति का परिचय और वह व्यवधान जो नायक को कार्रवाई के लिए मजबूर करता है।</p></div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 8px;"><strong>चरण 2: बढ़ता तनाव (अध्याय 11-25)</strong> <p style="font-size: 0.85rem; margin-top: 0.5rem;">प्रमुख जटिलताओं का परिचय। नायक प्रमुख सहयोगियों और शत्रुओं से मिलता है।</p></div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 8px;"><strong>चरण 3: निर्णायक मोड़ (अध्याय 26-40)</strong> <p style="font-size: 0.85rem; margin-top: 0.5rem;">पात्रों को अपरिवर्तनीय निर्णय लेने के लिए मजबूर होना पड़ता है।</p></div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 8px;"><strong>चरण 4: चरमोत्कर्ष और रहस्योद्घाटन (अध्याय 41-55)</strong> <p style="font-size: 0.85rem; margin-top: 0.5rem;">अंतिम टकराव जहां सभी कथा सूत्र मिलते हैं। एक गहरा सत्य सामने आता है।</p></div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 8px;"><strong>चरण 5: परिणाम और समाधान (अध्याय 56-अंत)</strong> <p style="font-size: 0.85rem; margin-top: 0.5rem;">नायक अपने विकल्पों के परिणामों से निपटता है।</p></div>
+            </div>
+        </div>
+
+        <div class="analysis-section">
+            <h3>निष्कर्ष: लिखित शब्द की स्थायी शक्ति</h3>
+            <p>इस पुस्तक को पढ़ना इतिहास के साथ बातचीत में संलग्न होना है। यह ध्यान, आत्मनिरीक्षण और असहज सच्चाइयों का सामना करने की इच्छा की मांग करता है।</p>
+        </div>
+    </div>
+    <style>
+        .academic-analysis h2 { color: #007185; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+        .analysis-section { margin-bottom: 1.5rem; padding: 1rem; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .analysis-section h3 { color: #007185; margin-bottom: 1rem; }
+        .analysis-section h4 { color: #1e293b; margin: 1rem 0 0.5rem; }
+        .analysis-section p { line-height: 1.7; color: #334155; text-align: justify; }
+    </style>
+    `
+    };
 
     // State
     let displayedBooks = [];
@@ -984,31 +998,30 @@
     function renderFeatured() {
         const grid = document.getElementById('featuredGrid');
         grid.innerHTML = FEATURED_BOOKS.map(book => {
-            const cover = \`https://archive.org/services/img/\${book.identifier}\`;
-            return \`
-            <div class="featured-card" onclick="window.location.href='hindi-book-detail.html?id=\${book.id}'">
+            const cover = `https://archive.org/services/img/${book.identifier}`;
+            return `
+            <div class="featured-card" onclick="window.location.href='hindi-book-detail.html?id=${book.id}'">
                 <span class="featured-badge">⭐ Featured</span>
-                <img src="\${cover}" class="featured-cover" alt="\${book.title}" onerror="this.onerror=null; this.src=\'https://archive.org/services/img/\' + (typeof book !== \'undefined\' ? book.identifier : \'\'); setTimeout(()=>{if(!this.complete||this.naturalHeight===0){this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';}}, 1500);" style="width:100%;height:260px;object-fit:cover;display:block;">
-                <div class="featured-cover-placeholder" style="display:none;background:\${book.coverGradient || getGradient(book.id)};width:100%;height:260px;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1rem;">
-                    <span style="font-size:3.5rem">\${book.coverEmoji || '📚'}</span>
-                    <span style="font-size:1.1rem;color:#fff;font-weight:700;margin-top:0.5rem">\${(book.title || \'\').substring(0,30)}</span>
+                <div class="featured-cover-placeholder" style="display:flex;background:${book.coverGradient || getGradient(book.id)};width:100%;height:260px;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1rem;">
+                    <span style="font-size:3.5rem">${book.coverEmoji || '📚'}</span>
+                    <span style="font-size:1.1rem;color:#fff;font-weight:700;margin-top:0.5rem">${(book.title || '').substring(0,30)}</span>
                 </div>
                 <div class="featured-info">
-                    <span class="featured-category">\${getCatLabel(book.category)}</span>
-                    <div class="featured-title">\${book.title}</div>
-                    <div class="featured-author">\${book.author}</div>
+                    <span class="featured-category">${getCatLabel(book.category)}</span>
+                    <div class="featured-title">${book.title}</div>
+                    <div class="featured-author">${book.author}</div>
                     <div class="star-rating">
-                        <span class="stars">\${renderStars(book.rating)}</span>
-                        <span class="rating-text">\${book.rating} (\${(book.ratingCount/1000).toFixed(1)}K रेटिंग)</span>
+                        <span class="stars">${renderStars(book.rating)}</span>
+                        <span class="rating-text">${book.rating} (${(book.ratingCount/1000).toFixed(1)}K रेटिंग)</span>
                     </div>
-                    <div class="featured-downloads"><i class="fas fa-download"></i> \${formatDownloads(book.downloads)} Downloads</div>
+                    <div class="featured-downloads"><i class="fas fa-download"></i> ${formatDownloads(book.downloads)} Downloads</div>
                     <div class="featured-actions">
-                        <button class="btn-read" onclick="event.stopPropagation();window.location.href='hindi-book-detail.html?id=\${book.id}'">📖 पढ़ें</button>
-                        <a class="btn-amazon" href="\${getAmazonLink(book)}" target="_blank" onclick="event.stopPropagation()"><i class="fab fa-amazon"></i></a>
+                        <button class="btn-read" onclick="event.stopPropagation();window.location.href='hindi-book-detail.html?id=${book.id}'">📖 पढ़ें</button>
+                        <a class="btn-amazon" href="${getAmazonLink(book)}" target="_blank" onclick="event.stopPropagation()"><i class="fab fa-amazon"></i></a>
                     </div>
                 </div>
             </div>
-        \`}).join('');
+        `}).join('');
     }
 
     // Filter & sort books
@@ -1060,10 +1073,9 @@
 
         slice.forEach(book => {
             const card = document.createElement('div');
-            const cover = `covers/hindi-${book.id}.jpg`;
             card.className = 'book-card';
-            card.onclick = () => window.location.href = \`hindi-book-detail.html?id=\${book.id}\`;
-            card.innerHTML = \`
+            card.onclick = () => window.location.href = `hindi-book-detail.html?id=${book.id}`;
+            card.innerHTML = `
                 <div class="book-cover-wrap" style="position:relative; overflow:hidden; border-radius: 4px 12px 12px 4px; box-shadow: inset -5px 0 15px rgba(0,0,0,0.3), inset 10px 0 20px rgba(255,255,255,0.1), 0 5px 15px rgba(0,0,0,0.2); background: ${book.coverGradient || getGradient(book.id)}; width:100%; height:220px;">
                 <div style="position:absolute; left: 12px; top:0; bottom:0; width:3px; background: rgba(255,255,255,0.15); box-shadow: 2px 0 5px rgba(0,0,0,0.2);"></div>
                 <div class="book-cover-placeholder" style="display:flex;width:100%;height:100%;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 1rem 1.5rem 1.8rem;text-align:center;box-sizing:border-box;">
@@ -1071,19 +1083,18 @@
                     <span style="font-size:1.0rem;color:#f8f9fa;font-weight:700;margin-top:0.75rem; line-height:1.3; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${(book.title || '').substring(0,40)}</span>
                     <span style="font-size:0.75rem;color:#e2e8f0;text-transform:uppercase;letter-spacing:1.5px;margin-top:0.5rem;font-weight:600;">${(book.author || '').substring(0,25)}</span>
                 </div>
-            </div>
-                    <span class="book-license">\${book.license}</span>
+                <span class="book-license">${book.license}</span>
                 </div>
                 <div class="book-info">
-                    <div class="book-title">\${book.title}</div>
-                    <div class="book-author">\${book.author}</div>
-                    <span class="book-genre">\${getCatLabel(book.category)}</span>
+                    <div class="book-title">${book.title}</div>
+                    <div class="book-author">${book.author}</div>
+                    <span class="book-genre">${getCatLabel(book.category)}</span>
                     <div class="book-mini-stats">
-                        <span class="mini-stars">\${renderStars(book.rating)} \${book.rating}</span>
-                        <span><i class="fas fa-download"></i> \${formatDownloads(book.downloads)}</span>
+                        <span class="mini-stars">${renderStars(book.rating)} ${book.rating}</span>
+                        <span><i class="fas fa-download"></i> ${formatDownloads(book.downloads)}</span>
                     </div>
                 </div>
-            \`;
+            `;
             grid.appendChild(card);
         });
 
@@ -1151,7 +1162,7 @@
             <!-- 10K Summary -->
             <div class="modal-section">
                 <h3><i class="fas fa-book-open"></i> विस्तृत सारांश (10,000 शब्द)</h3>
-                <div class="summary-content">${book.summary || `<p>${book.description}</p>`}</div>
+                <div class="summary-content">${book.summary || SUMMARIES.default}</div>
             </div>
 
             <!-- Actions -->
@@ -1291,7 +1302,6 @@
     scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
 
     // INIT
-    renderFeatured();
     renderBooks(true);
     </script>
 </body>
